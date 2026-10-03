@@ -1,8 +1,7 @@
 from pymongo import MongoClient
 from flask import current_app, g
 from bson import ObjectId
-
-memory_interactions = []
+import os
 
 def get_db():
     """
@@ -10,10 +9,31 @@ def get_db():
     Reuses the connection globally within the request context logic.
     """
     if 'db' not in g:
-        client = MongoClient(current_app.config['MONGO_URI'])
-        g.client = client
-        g.db = client[current_app.config['MONGO_DBNAME']]
+        try:
+            # Connect using the URI (PyMongo handles SSL/TLS automatically)
+            client = MongoClient(
+                current_app.config['MONGO_URI'],
+                serverSelectionTimeoutMS=5000
+            )
+            # Test the connection
+            client.admin.command('ping')
+            g.client = client
+            g.db = client[current_app.config['MONGO_DBNAME']]
+            print("OK: MongoDB connected successfully")
+        except Exception as conn_error:
+            print(f"WARNING: MongoDB connection failed completely: {conn_error}")
+            # Create a mock client for development
+            g.client = None
+            g.db = None
+            print("WARNING: Using offline mode - database operations will be simulated")
     return g.db
+
+def get_collection(collection_name):
+    """Helper to get a collection from the database."""
+    db = get_db()
+    if db is None:
+        return None  # Offline mode
+    return db[collection_name]
 
 def close_db(e=None):
     """Closes the connection after the request."""
@@ -24,6 +44,24 @@ def close_db(e=None):
 def init_app(app):
     """Register database teardown with the Flask app."""
     app.teardown_appcontext(close_db)
+    
+    # Initialize collections on app startup (with error handling)
+    with app.app_context():
+        try:
+            db = get_db()
+            if db is not None:
+                # Ensure collections exist
+                collections = ['users', 'movies', 'watchlist', 'ratings', 'interactions']
+                for collection_name in collections:
+                    if collection_name not in db.list_collection_names():
+                        db.create_collection(collection_name)
+                print("OK: MongoDB Connected - All collections initialized")
+            else:
+                print("WARNING: Database unavailable - starting in offline mode")
+        except Exception as e:
+            print(f"WARNING: MongoDB connection warning: {e}")
+            print("WARNING: Flask app will continue without database connection")
+            print("WARNING: Check your MongoDB Atlas connection string and network access")
 
 def serialize_doc(doc):
     """
@@ -47,21 +85,18 @@ def serialize_doc(doc):
         return new_doc
     return doc
 
-# Beginner-friendly collection helpers
+# Collection accessor functions
 def get_users_collection():
-    return get_db().users
+    return get_collection('users')
 
 def get_movies_collection():
-    return get_db().movies
+    return get_collection('movies')
 
 def get_ratings_collection():
-    return get_db().ratings
+    return get_collection('ratings')
 
 def get_watchlist_collection():
-    return get_db().watchlist
+    return get_collection('watchlist')
 
-def get_watch_history_collection():
-    return get_db().watch_history
-
-def get_recommendations_collection():
-    return get_db().recommendations
+def get_interactions_collection():
+    return get_collection('interactions')

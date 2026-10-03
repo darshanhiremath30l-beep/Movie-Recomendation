@@ -1,18 +1,22 @@
 from flask import Blueprint, jsonify, request
 from ..services.recommendation_service import compute_recommendations_for_user
-from ..db import get_db
+from ..db import get_db, get_users_collection
 from bson import ObjectId
-from datetime import datetime
+from bson.errors import InvalidId
+from datetime import datetime, timezone
 
 interactions_bp = Blueprint('interactions', __name__)
 
 def record_interaction(user_id, movie_id, action_type, metadata=None):
     db = get_db()
+    if db is None:
+        return
+        
     interaction = {
         "user_id": user_id,
         "movie_id": movie_id,
         "action_type": action_type,
-        "timestamp": datetime.utcnow(),
+        "timestamp": datetime.now(timezone.utc),
         "metadata": metadata or {}
     }
     db.interactions.insert_one(interaction)
@@ -26,6 +30,12 @@ def like_movie():
     if movie_id:
         try:
             record_interaction(user_id, movie_id, "like")
+            users = get_users_collection()
+            if users is not None and user_id != "default_user":
+                try:
+                    users.update_one({"_id": ObjectId(user_id)}, {"$addToSet": {"likes": movie_id}})
+                except InvalidId:
+                    pass
         except Exception:
             pass # Ignore if DB not running
             
@@ -74,6 +84,13 @@ def watchlist():
     if movie_id:
         try:
             record_interaction(user_id, movie_id, action)
+            users = get_users_collection()
+            if users is not None and user_id != "default_user":
+                try:
+                    update_action = "$addToSet" if request.method == 'POST' else "$pull"
+                    users.update_one({"_id": ObjectId(user_id)}, {update_action: {"watchlist": movie_id}})
+                except InvalidId:
+                    pass
         except Exception:
             pass
             

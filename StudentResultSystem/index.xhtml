@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Student Result Processing System</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="college-header" style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px dashed #8b4513;">
+            <img src="https://ui-avatars.com/api/?name=GM+U&amp;background=8b4513&amp;color=fff&amp;size=80&amp;font-size=0.4&amp;rounded=true" alt="GM University Logo" style="box-shadow: 0 2px 4px rgba(0,0,0,0.2);" />
+            <h2 style="margin: 10px 0 0 0; color: #5c4033; font-size: 2em; letter-spacing: 1px;">GM University</h2>
+            <p style="margin: 5px 0 0 0; color: #8b4513; font-weight: bold; text-transform: uppercase; font-size: 0.85em;">Department of Examinations</p>
+        </div>
+        <h1 style="border-bottom: none; padding-bottom: 0; margin-top: 10px;">Student Result Processing System</h1>
+        
+        <form id="resultForm" action="" onsubmit="processResults(event);">
+            <fieldset>
+                <legend>Student Information</legend>
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <img id="studentPhotoPreview" src="https://ui-avatars.com/api/?name=Student&amp;size=100&amp;background=ccc&amp;color=fff" alt="Student Photo" style="border-radius: 50%; width: 100px; height: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                </div>
+                <div class="form-group">
+                    <label for="studentName">Student Name:</label>
+                    <input type="text" id="studentName" required="required" oninput="updatePhotoPreview();" />
+                </div>
+                <div class="form-group">
+                    <label for="rollNo">Roll Number:</label>
+                    <input type="text" id="rollNo" required="required" />
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Marks Entry (0 - 100)</legend>
+                <div class="form-group">
+                    <label for="mathMarks">Mathematics:</label>
+                    <input type="text" id="mathMarks" required="required" />
+                </div>
+                <div class="form-group">
+                    <label for="sciMarks">Science:</label>
+                    <input type="text" id="sciMarks" required="required" />
+                </div>
+                <div class="form-group">
+                    <label for="engMarks">English:</label>
+                    <input type="text" id="engMarks" required="required" />
+                </div>
+                <div class="form-group">
+                    <label for="histMarks">History:</label>
+                    <input type="text" id="histMarks" required="required" />
+                </div>
+                <div class="form-group">
+                    <label for="compMarks">Computer Science:</label>
+                    <input type="text" id="compMarks" required="required" />
+                </div>
+            </fieldset>
+
+            <div class="form-actions">
+                <button type="submit">Process Result</button>
+                <button type="reset" onclick="clearReport();">Reset</button>
+            </div>
+        </form>
+
+        <div id="reportContainer" class="hidden">
+            <!-- Formatted report will be injected here via JavaScript -->
+        </div>
+    </div>
+</body>
+</html>

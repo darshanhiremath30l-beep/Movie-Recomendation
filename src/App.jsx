@@ -7,7 +7,8 @@ import MovieDetails from './pages/MovieDetails';
 import Recommendations from './pages/Recommendations';
 import Watchlist from './pages/Watchlist';
 import Profile from './pages/Profile';
-import Auth from './pages/Auth';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 import './App.css';
 import { RecommendationProvider } from './RecommendationContext';
 
@@ -28,8 +29,8 @@ function App() {
               <Route path="/recommendations" element={<Recommendations />} />
               <Route path="/watchlist" element={<Watchlist />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/login" element={<Auth type="login" />} />
-              <Route path="/signup" element={<Auth type="signup" />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
             </Routes>
           </main>
           <Footer />

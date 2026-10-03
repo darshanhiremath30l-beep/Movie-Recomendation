@@ -1,16 +1,104 @@
-# React + Vite
+# Movie Recommendation System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack movie recommendation application built with React (frontend) and Flask (backend).
 
-Currently, two official plugins are available:
+## 🚀 Quick Start (One-Click Launch)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Just double-click `run-app.bat`** to start the entire application!
 
-## React Compiler
+This automatically:
+- ✅ Starts Flask backend server (port 5000)
+- ✅ Starts React frontend server (port 5173)
+- ✅ Opens your browser to the application
+- ✅ Shows connection details and API endpoints
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+For detailed setup instructions, see [QUICKSTART.md](QUICKSTART.md)
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- User authentication
+- Movie search and details
+- Personalized recommendations
+- Watchlist management
+- User profiles
+
+## Prerequisites
+
+- Node.js (for frontend)
+- Python 3.8+ (for backend)
+- MongoDB (for database - can be installed automatically)
+
+### MongoDB Installation
+
+**Option 1: Automatic Installation (Recommended)**
+- Run `start.bat` and choose option 1 (batch) or 2 (PowerShell) when prompted
+
+**Option 2: Custom Installation Path**
+If you installed MongoDB in a custom location:
+- Run `start.bat` and choose option 3 to enter your MongoDB path
+
+**Option 3: Manual Installation**
+1. Download MongoDB Community Edition from: https://www.mongodb.com/try/download/community
+2. Run the installer and follow the setup wizard
+3. Create data directory: `mkdir C:\data\db`
+4. Start MongoDB service or run manually: `"C:\Program Files\MongoDB\Server\7.0\bin\mongod.exe" --dbpath "C:\data\db"`
+
+### Features Requiring MongoDB
+- User authentication and profiles
+- Personalized movie recommendations
+- Watchlist and user interactions
+- Real-time movie search (OMDB API integration)
+- Persistent data storage
+
+**Without MongoDB**: App runs with sample offline data for browsing and basic functionality.
+
+### Testing MongoDB Installation
+Run `test_mongodb.bat` to verify MongoDB is working correctly.
+
+### Installation
+
+1. Clone the repository
+2. Install frontend dependencies:
+   ```bash
+   npm install
+   ```
+3. Install backend dependencies:
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   cd ..
+   ```
+
+### Running the Application
+
+**Single Click Start (Windows):**
+Double-click the `start.bat` file in the root directory to start both frontend and backend servers.
+
+**Manual Start:**
+
+1. Start the backend:
+   ```bash
+   cd backend
+   python run.py
+   ```
+
+2. Start the frontend (in a new terminal):
+   ```bash
+   npm run dev
+   ```
+
+The application will be available at:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5000
+
+## Project Structure
+
+- `src/` - React frontend code
+- `backend/` - Flask backend API
+- `public/` - Static assets
+
+## Technologies Used
+
+- Frontend: React, Vite, React Router
+- Backend: Flask, MongoDB, scikit-learn
+- Styling: CSS modules

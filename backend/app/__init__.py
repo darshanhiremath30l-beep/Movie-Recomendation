@@ -34,9 +34,13 @@ def create_app(config_name='default'):
     def health_check():
         db_status = "disconnected"
         try:
-            # Ping database to verify connection
-            get_db().command('ping')
-            db_status = "connected"
+            db = get_db()
+            if db is not None:
+                # Ping database to verify connection
+                db.command('ping')
+                db_status = "connected"
+            else:
+                db_status = "offline_mode"
         except Exception as e:
             db_status = f"error: {str(e)}"
             
