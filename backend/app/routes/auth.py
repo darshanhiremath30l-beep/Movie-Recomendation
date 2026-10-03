@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app.db import get_users_collection, serialize_doc
+from ..db import get_users_collection, serialize_doc
 from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 

@@ -1,10 +1,16 @@
 import os
 from pymongo import MongoClient
+from dotenv import load_dotenv
 
-# Dummy config in case the main app config isn't available
+# Load environment variables from .env
+env_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(env_path)
+
 MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
+MONGO_DBNAME = os.getenv('MONGO_DBNAME', 'cinematch_db')
+
 client = MongoClient(MONGO_URI)
-db = client['cinematch']
+db = client[MONGO_DBNAME]
 movies_coll = db['movies']
 
 mock_movies = [
@@ -58,7 +64,7 @@ mock_movies = [
     "poster": "https://m.media-amazon.com/images/M/MV5BNzRiMjg0MzUtNTNhYi00N2Q5LWEwMzMtYWJiM2M1M2VkOGU1XkEyXkFqcGc@._V1_SX300.jpg",
     "backdrop": "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=1200&auto=format&fit=crop",
     "cast": ["Ryan Reynolds", "Hugh Jackman", "Emma Corrin"],
-    director: "Shawn Levy"
+    "director": "Shawn Levy"
   },
   {
     "movie_id": "tt15398776",

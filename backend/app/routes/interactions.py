@@ -68,11 +68,18 @@ def watch_movie():
     if movie_id:
         try:
             record_interaction(user_id, movie_id, "watch")
+            users = get_users_collection()
+            if users is not None and user_id != "default_user":
+                try:
+                    users.update_one({"_id": ObjectId(user_id)}, {"$addToSet": {"watch_history": movie_id}})
+                except InvalidId:
+                    pass
         except Exception:
             pass
             
     recs = compute_recommendations_for_user(user_id)
-    return jsonify({"message": "Added to watch history", "recommendations": recs}), 200
+    return jsonify({"message": "Added to watch history and updated recommendations", "recommendations": recs}), 200
+
 
 @interactions_bp.route('/watchlist', methods=['POST', 'DELETE'])
 def watchlist():

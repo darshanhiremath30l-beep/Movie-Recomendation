@@ -1,8 +1,10 @@
 Flask==3.0.3
 Flask-CORS==4.0.0
-pymongo==4.7.0
+pymongo[srv]==4.7.0
+dnspython==2.8.0
 python-dotenv==1.0.1
 pandas>=2.0.0
 scikit-learn>=1.2.0
 requests==2.31.0
 youtube-search-python==1.6.6
+
