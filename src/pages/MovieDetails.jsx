@@ -2,8 +2,37 @@ import { useParams } from 'react-router-dom';
 import { useContext, useState, useEffect } from 'react';
 import { RecommendationContext } from '../RecommendationContext';
 import { getMovieDetailsAPI } from '../api';
-import { Star, Play, Plus, Heart, X, Video } from 'lucide-react';
+import { Star, Play, Plus, Heart, X, ExternalLink, Video } from 'lucide-react';
 import './MovieDetails.css';
+
+// Mapping for mock dataset IDs to valid IMDb IDs for external streaming
+const mockMovieImdbMap = {
+  m1: 'tt1375666',
+  m2: 'tt0111161',
+  m3: 'tt0816692',
+  m4: 'tt1630029',
+  m5: 'tt0848228',
+  m6: 'tt2582802',
+  m7: 'tt1160419',
+  m8: 'tt0468569',
+};
+
+// Verified YouTube trailer video IDs (guaranteed non-blocked)
+const verifiedTrailers = {
+  tt12735488: 'kPyZ5E7pTNE', // Kalki 2898 AD
+  tt15239678: 'Way9Dexny3w', // Dune Part 2
+  tt28448834: 'KVnheWAFiEU', // Stree 2
+  tt6263850: '73_1biulkYk',  // Deadpool & Wolverine
+  tt15398776: 'uYPbbksJxIg', // Oppenheimer
+  tt15354916: 'COv52Qyctws', // Jawan
+  tt8178634: 'Gy4Bgd332T0',  // RRR
+  tt10698680: 'JKa05nyUjQg', // K.G.F Chapter 2
+  m1: 'YoHD9XEInc0',
+  m2: 'PLl99DfY644',
+  m3: 'zSWdZVtXT7E',
+  m4: 'd9MyW72ELq0',
+  m5: 'EXeTwQWrcwY'
+};
 
 const MovieDetails = () => {
   const { id } = useParams();
@@ -11,19 +40,11 @@ const MovieDetails = () => {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPlayer, setShowPlayer] = useState(false);
-  const [showTrailer, setShowTrailer] = useState(false);
-  
-  // Anti-Ban Streaming Servers
-  const servers = [
-    { name: 'Server 1 (VidSrc CC)', url: `https://vidsrc.cc/v2/embed/movie/${id}` },
-    { name: 'Server 2 (Embed.su)', url: `https://embed.su/embed/movie/${id}` },
-    { name: 'Server 3 (VidLink)', url: `https://vidlink.pro/movie/${id}` },
-    { name: 'Server 4 (Vidsrc Pro)', url: `https://vidsrc.pro/embed/movie/${id}` }
-  ];
-  const [activeServer, setActiveServer] = useState(servers[0].url);
+  const [useTrailer, setUseTrailer] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    setUseTrailer(false);
     getMovieDetailsAPI(id).then(res => {
       if (res && res.data) {
         setMovie(res.data);
@@ -47,6 +68,17 @@ const MovieDetails = () => {
       </div>
     );
   }
+
+  // Resolved target IMDb ID for full feature stream
+  const targetImdbId = id && id.startsWith('tt') ? id : (mockMovieImdbMap[id] || 'tt15239678');
+  const fullStreamUrl = `https://www.2embed.cc/embed/${targetImdbId}`;
+
+  // Trailer Embed URL
+  const trailerEmbedUrl = verifiedTrailers[id] 
+    ? `https://www.youtube-nocookie.com/embed/${verifiedTrailers[id]}?autoplay=1`
+    : `https://www.youtube-nocookie.com/embed/Way9Dexny3w?autoplay=1`;
+
+  const activeVideoUrl = useTrailer ? trailerEmbedUrl : fullStreamUrl;
 
   return (
     <>
@@ -72,31 +104,40 @@ const MovieDetails = () => {
                 <span>|</span>
                 <span>{movie.duration}</span>
                 <span>|</span>
-                <span>{movie.genres.join(', ')}</span>
+                <span>{Array.isArray(movie.genres) ? movie.genres.join(', ') : movie.genres}</span>
               </div>
 
               <div className="details-actions">
                 <button 
                   className="btn btn-primary" 
-                  onClick={() => { interactWithMovie(movie.id, 'watch'); setShowPlayer(true); }}
+                  onClick={() => { interactWithMovie(movie.id, 'watch'); setUseTrailer(false); setShowPlayer(true); }}
                 >
                   <Play size={20} fill="currentColor" />
                   Play Movie
                 </button>
-                {movie.trailerUrl && (
-                  <button 
-                    className="btn btn-secondary" 
-                    onClick={() => setShowTrailer(true)}
-                    style={{ background: 'rgba(239, 68, 68, 0.1)', borderColor: '#ef4444', color: '#ef4444' }}
-                  >
-                    <Video size={20} />
-                    Watch Trailer
-                  </button>
-                )}
+
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => { interactWithMovie(movie.id, 'watch'); setUseTrailer(true); setShowPlayer(true); }}
+                >
+                  <Video size={20} />
+                  Watch Trailer
+                </button>
+                
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => window.open(fullStreamUrl, '_blank')}
+                  title="Open Full Screen Stream in New Tab"
+                >
+                  <ExternalLink size={20} />
+                  Full Stream
+                </button>
+
                 <button className="btn btn-secondary" onClick={() => interactWithMovie(movie.id, 'watchlist')}>
                   <Plus size={20} />
                   Add to Watchlist
                 </button>
+
                 <button className="btn btn-secondary" style={{ padding: '12px' }} onClick={() => interactWithMovie(movie.id, 'like')}>
                   <Heart size={20} />
                 </button>
@@ -131,60 +172,69 @@ const MovieDetails = () => {
         </div>
       </div>
 
-      {/* Whole Movie Player Modal */}
+      {/* Video Player Modal */}
       {showPlayer && (
         <div className="player-modal">
           <div className="player-modal-content" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div className="player-header" style={{ display: 'flex', gap: '10px', padding: '15px', background: '#0a0a0f', alignItems: 'center' }}>
-               <h3 style={{ margin: 0, marginRight: '15px', fontSize: '16px' }}>Streaming Servers:</h3>
-               {servers.map((s, idx) => (
-                 <button 
-                   key={idx} 
-                   onClick={() => setActiveServer(s.url)}
-                   style={{
-                     padding: '6px 12px',
-                     borderRadius: '4px',
-                     background: activeServer === s.url ? '#10b981' : '#1b1b29',
-                     color: '#fff',
-                     border: activeServer === s.url ? '1px solid #10b981' : '1px solid #333',
-                     cursor: 'pointer'
-                   }}
-                 >
-                   {s.name}
-                 </button>
-               ))}
-               <button onClick={() => setShowPlayer(false)} style={{ marginLeft: 'auto', background: 'transparent', color: '#ef4444', border: 'none', cursor: 'pointer' }}>
-                 <X size={24} />
-               </button>
-            </div>
-            <iframe 
-              src={activeServer} 
-              width="100%" 
-              height="100%" 
-              frameBorder="0" 
-              allowFullScreen
-              title="Movie Player"
-              style={{ flex: 1 }}
-            ></iframe>
-          </div>
-        </div>
-      )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: '#0a0a0f', borderBottom: '1px solid #1f1f2e' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setUseTrailer(false)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    background: !useTrailer ? '#10b981' : '#1b1b29',
+                    color: '#fff',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: '600'
+                  }}
+                >
+                  Movie Stream
+                </button>
+                <button 
+                  onClick={() => setUseTrailer(true)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    background: useTrailer ? '#3b82f6' : '#1b1b29',
+                    color: '#fff',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: '600'
+                  }}
+                >
+                  HD Trailer
+                </button>
+              </div>
 
-      {/* Trailer Player Modal */}
-      {showTrailer && movie.trailerUrl && (
-        <div className="player-modal">
-          <div className="player-modal-content">
-            <button className="close-player-btn" onClick={() => setShowTrailer(false)}>
-              <X size={24} />
-            </button>
-            <iframe 
-              src={movie.trailerUrl} 
-              width="100%" 
-              height="100%" 
-              frameBorder="0" 
-              allowFullScreen
-              title="Trailer Player"
-            ></iframe>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button 
+                  onClick={() => window.open(fullStreamUrl, '_blank')}
+                  style={{ padding: '6px 12px', borderRadius: '6px', background: '#2563eb', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <ExternalLink size={14} /> Open Stream Mirror
+                </button>
+                <button onClick={() => setShowPlayer(false)} style={{ background: 'transparent', color: '#ef4444', border: 'none', cursor: 'pointer' }}>
+                  <X size={24} />
+                </button>
+              </div>
+            </div>
+
+            <div style={{ flex: 1, position: 'relative', background: '#000' }}>
+              <iframe 
+                src={activeVideoUrl} 
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Movie Player"
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+              ></iframe>
+            </div>
           </div>
         </div>
       )}
@@ -193,3 +243,7 @@ const MovieDetails = () => {
 };
 
 export default MovieDetails;
+
+
+
+

@@ -73,39 +73,46 @@ export const signupUser = async (email, name = '') => {
 // Fallback movie data for when backend is unavailable
 const fallbackMovies = [
   {
-    id: "m1",
-    title: "Neon Skyline",
+    id: "tt12735488",
+    title: "Kalki 2898 AD",
     genres: ["Sci-Fi", "Action"],
-    rating: 8.7,
-    year: 2026,
-    duration: "2h 14m",
-    synopsis: "In a neon-lit metropolis of the future, a rogue AI hunter must team up with an unlikely ally to prevent a city-wide blackout.",
-    poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600&auto=format&fit=crop",
+    rating: 7.6,
+    year: 2024,
+    duration: "3h 0m",
+    synopsis: "When the world is consumed by darkness, a modern avatar descends to earth to protect the innocent from evil forces in a futuristic post-apocalyptic world.",
+    poster: "https://m.media-amazon.com/images/M/MV5BZjJhMTFiN2UtMmQ4MC00MTZjLTk3NDYtYWRkNTFmNDQwNDFjXkEyXkFqcGc@._V1_SX300.jpg",
     backdrop: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop",
-    cast: ["Elena R.", "Marcus T.", "Sam K."],
-    director: "J. Cameron"
+    cast: ["Prabhas", "Amitabh Bachchan", "Kamal Haasan", "Deepika Padukone"],
+    director: "Nag Ashwin"
   },
   {
-    id: "m2",
-    title: "Echoes of Silence",
-    genres: ["Drama", "Mystery"],
-    rating: 7.9,
-    year: 2025,
-    duration: "1h 58m",
-    synopsis: "A small-time detective unravels a deep mystery in a quiet coastal town where nothing is as it seems.",
-    poster: "https://images.unsplash.com/photo-1505686994434-e3cc5abf1330?q=80&w=600&auto=format&fit=crop"
+    id: "tt15239678",
+    title: "Dune: Part Two",
+    genres: ["Sci-Fi", "Adventure"],
+    rating: 8.5,
+    year: 2024,
+    duration: "2h 46m",
+    synopsis: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+    poster: "https://m.media-amazon.com/images/M/MV5BN2QyZGU4ZDctOWMzMy00NTc5LThlOGQtODhmNDI1NmY5YzAwXkEyXkFqcGc@._V1_SX300.jpg",
+    backdrop: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop",
+    cast: ["Timothée Chalamet", "Zendaya", "Rebecca Ferguson"],
+    director: "Denis Villeneuve"
   },
   {
-    id: "m3",
-    title: "Midnight Protocol",
-    genres: ["Thriller", "Action"],
-    rating: 8.2,
-    year: 2025,
-    duration: "2h 5m",
-    synopsis: "A cybersecurity expert races against time to prevent a global data breach that could expose every secret in the digital world.",
-    poster: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=600&auto=format&fit=crop"
+    id: "tt28448834",
+    title: "Stree 2",
+    genres: ["Horror", "Comedy"],
+    rating: 7.5,
+    year: 2024,
+    duration: "2h 27m",
+    synopsis: "The town of Chanderi is haunted again by a headless entity named Sarkata. Vicky and his squad must save their town.",
+    poster: "https://m.media-amazon.com/images/M/MV5BMjA4Y2E4NDEtN2VhNC00NWMxLWEyNWItN2JjY2ZlNDI3NzQ1XkEyXkFqcGc@._V1_SX300.jpg",
+    backdrop: "https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1200&auto=format&fit=crop",
+    cast: ["Rajkummar Rao", "Shraddha Kapoor", "Pankaj Tripathi"],
+    director: "Amar Kaushik"
   }
 ];
+
 
 export const interactWithMovie = async (movieId, action, payload = {}, userId = "default_user") => {
   try {
