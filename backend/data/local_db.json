@@ -1,0 +1,240 @@
+{
+  "users": [
+    {
+      "_id": "650000000000000000000001",
+      "name": "Demo User",
+      "email": "demo@example.com",
+      "password": "scrypt:32768:8:1$szE1ooaOrU28n6y7$e07c2cb6a9a743b549c87564427273afb0d021a3b3adb41be83af2cf961a49d4eb112f31221a2d227157fd4f59043886c036c988a3cb4ad1cef796d2ef2c6364",
+      "watchlist": [
+        "tt12735488",
+        "tt15239678"
+      ],
+      "likes": [
+        "tt15239678"
+      ],
+      "ratings": [
+        {
+          "movie_id": "tt15239678",
+          "rating": 9.0
+        }
+      ],
+      "watch_history": []
+    },
+    {
+      "_id": "650000000000000000000002",
+      "name": "Darshan",
+      "email": "darshan@example.com",
+      "password": "scrypt:32768:8:1$mX2md8VDFh6m7bO2$c785128cf974dbbe76bb174a556bbbebaf2977af00215d095a0f634708a122fa77e50796c7b629b4eaf36ff0c417f86c38fdcdac81d0a54c706f84991f475194",
+      "watchlist": [
+        "tt12735488",
+        "tt28448834"
+      ],
+      "likes": [
+        "tt12735488"
+      ],
+      "ratings": [],
+      "watch_history": []
+    },
+    {
+      "_id": "6adf1fdc6dd4f74c4c6ec52c",
+      "name": "Test User",
+      "email": "user_1793007580@example.com",
+      "password": "scrypt:32768:8:1$V0d9Krc1JTuqes0S$4767834293cadb03dfbea9a4ea8438f0cab0f26a9f78916421b7a1a5f49a3ac4231f9ce6f336b8ef6fdbcc63d2613964d9788653d6bc89b1bce4fcce8252bcd0",
+      "created_at": "2026-10-26T09:39:40.995504+00:00",
+      "watchlist": [
+        "tt12735488"
+      ],
+      "likes": [],
+      "ratings": [],
+      "watch_history": []
+    }
+  ],
+  "movies": [
+    {
+      "_id": "tt12735488",
+      "movie_id": "tt12735488",
+      "title": "Kalki 2898 AD",
+      "genres": [
+        "Telugu",
+        "Action",
+        "Sci-Fi"
+      ],
+      "rating": 7.6,
+      "year": 2024,
+      "duration": "3h 0m",
+      "synopsis": "When the world is consumed by darkness, a modern avatar descends to earth to protect the innocent from evil forces in a futuristic post-apocalyptic world.",
+      "poster": "https://m.media-amazon.com/images/M/MV5BZjJhMTFiN2UtMmQ4MC00MTZjLTk3NDYtYWRkNTFmNDQwNDFjXkEyXkFqcGc@._V1_SX300.jpg",
+      "backdrop": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop",
+      "cast": [
+        "Prabhas",
+        "Amitabh Bachchan",
+        "Kamal Haasan",
+        "Deepika Padukone"
+      ],
+      "director": "Nag Ashwin"
+    },
+    {
+      "_id": "tt15239678",
+      "movie_id": "tt15239678",
+      "title": "Dune: Part Two",
+      "genres": [
+        "Sci-Fi",
+        "Adventure",
+        "Action"
+      ],
+      "rating": 8.5,
+      "year": 2024,
+      "duration": "2h 46m",
+      "synopsis": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+      "poster": "https://m.media-amazon.com/images/M/MV5BN2QyZGU4ZDctOWMzMy00NTc5LThlOGQtODhmNDI1NmY5YzAwXkEyXkFqcGc@._V1_SX300.jpg",
+      "backdrop": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop",
+      "cast": [
+        "Timoth\u00e9e Chalamet",
+        "Zendaya",
+        "Rebecca Ferguson"
+      ],
+      "director": "Denis Villeneuve"
+    },
+    {
+      "_id": "tt28448834",
+      "movie_id": "tt28448834",
+      "title": "Stree 2",
+      "genres": [
+        "Hindi",
+        "Horror",
+        "Comedy"
+      ],
+      "rating": 7.5,
+      "year": 2024,
+      "duration": "2h 27m",
+      "synopsis": "The town of Chanderi is haunted again by a headless entity named Sarkata. Vicky and his squad must save their town.",
+      "poster": "https://m.media-amazon.com/images/M/MV5BMjA4Y2E4NDEtN2VhNC00NWMxLWEyNWItN2JjY2ZlNDI3NzQ1XkEyXkFqcGc@._V1_SX300.jpg",
+      "backdrop": "https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1200&auto=format&fit=crop",
+      "cast": [
+        "Rajkummar Rao",
+        "Shraddha Kapoor",
+        "Pankaj Tripathi"
+      ],
+      "director": "Amar Kaushik"
+    },
+    {
+      "_id": "tt6263850",
+      "movie_id": "tt6263850",
+      "title": "Deadpool & Wolverine",
+      "genres": [
+        "Action",
+        "Comedy",
+        "Sci-Fi"
+      ],
+      "rating": 7.7,
+      "year": 2024,
+      "duration": "2h 8m",
+      "synopsis": "Wolverine is recovering from his injuries when he crosses paths with the loudmouth Deadpool to defeat a common enemy.",
+      "poster": "https://m.media-amazon.com/images/M/MV5BNzRiMjg0MzUtNTNhYi00N2Q5LWEwMzMtYWJiM2M1M2VkOGU1XkEyXkFqcGc@._V1_SX300.jpg",
+      "backdrop": "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=1200&auto=format&fit=crop",
+      "cast": [
+        "Ryan Reynolds",
+        "Hugh Jackman",
+        "Emma Corrin"
+      ],
+      "director": "Shawn Levy"
+    },
+    {
+      "_id": "tt15398776",
+      "movie_id": "tt15398776",
+      "title": "Oppenheimer",
+      "genres": [
+        "Drama",
+        "History"
+      ],
+      "rating": 8.9,
+      "year": 2023,
+      "duration": "3h 0m",
+      "synopsis": "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb during World War II.",
+      "poster": "https://m.media-amazon.com/images/M/MV5BMDBmYTZjNjUtN2M1MS00MTQ2LTkNEtLTlhNzNhNmNhNTU0XkEyXkFqcGc@._V1_SX300.jpg",
+      "backdrop": "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1200&auto=format&fit=crop",
+      "cast": [
+        "Cillian Murphy",
+        "Emily Blunt",
+        "Matt Damon",
+        "Robert Downey Jr."
+      ],
+      "director": "Christopher Nolan"
+    },
+    {
+      "_id": "tt15354916",
+      "movie_id": "tt15354916",
+      "title": "Jawan",
+      "genres": [
+        "Hindi",
+        "Action"
+      ],
+      "rating": 7.0,
+      "year": 2023,
+      "duration": "2h 49m",
+      "synopsis": "A prison warden recruits inmates to commit outrageous crimes that shed light on corruption and injustice.",
+      "poster": "https://m.media-amazon.com/images/M/MV5BMGExNGI1NDktOWI2Mi00NDM3LWIxMmQtNTQxYTgzMzI0MTA1XkEyXkFqcGc@._V1_SX300.jpg",
+      "backdrop": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop",
+      "cast": [
+        "Shah Rukh Khan",
+        "Nayanthara",
+        "Vijay Sethupathi"
+      ],
+      "director": "Atlee"
+    },
+    {
+      "_id": "tt8178634",
+      "movie_id": "tt8178634",
+      "title": "RRR",
+      "genres": [
+        "Telugu",
+        "Action"
+      ],
+      "rating": 7.8,
+      "year": 2022,
+      "duration": "3h 7m",
+      "synopsis": "A fearless warrior on a perilous mission comes face to face with a steely cop serving British forces in pre-independent India.",
+      "poster": "https://m.media-amazon.com/images/M/MV5BNWMwODYyMjQtMTczMi00NTQ1LWFkYjItMGJhMWRkY2E3NDAyXkEyXkFqcGc@._V1_SX300.jpg",
+      "backdrop": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop",
+      "cast": [
+        "N.T. Rama Rao Jr.",
+        "Ram Charan",
+        "Ajay Devgn"
+      ],
+      "director": "S.S. Rajamouli"
+    },
+    {
+      "_id": "tt10698680",
+      "movie_id": "tt10698680",
+      "title": "K.G.F: Chapter 2",
+      "genres": [
+        "Kannada",
+        "Action"
+      ],
+      "rating": 8.2,
+      "year": 2022,
+      "duration": "2h 46m",
+      "synopsis": "In the blood-soaked Kolar Gold Fields, Rocky's name strikes fear into his foes while he battles threats from all sides.",
+      "poster": "https://m.media-amazon.com/images/M/MV5BZmQzZjVkZTUtYjI4ZC00ZDJmLWI0ZDUtZTFmMGM1Mzc5ZjIyXkEyXkFqcGc@._V1_SX300.jpg",
+      "backdrop": "https://images.unsplash.com/photo-1505686994434-e3cc5abf1330?q=80&w=1200&auto=format&fit=crop",
+      "cast": [
+        "Yash",
+        "Sanjay Dutt",
+        "Raveena Tandon"
+      ],
+      "director": "Prashanth Neel"
+    }
+  ],
+  "interactions": [
+    {
+      "user_id": "6adf1fdc6dd4f74c4c6ec52c",
+      "movie_id": "tt12735488",
+      "action_type": "add_watchlist",
+      "timestamp": "2026-10-26T09:39:41.244311+00:00",
+      "metadata": {},
+      "_id": "6adf1fdd6dd4f74c4c6ec52d"
+    }
+  ],
+  "watchlist": [],
+  "ratings": []
+}

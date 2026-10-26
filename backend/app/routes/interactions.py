@@ -13,13 +13,29 @@ def record_interaction(user_id, movie_id, action_type, metadata=None):
         return
         
     interaction = {
-        "user_id": user_id,
+        "user_id": str(user_id),
         "movie_id": movie_id,
         "action_type": action_type,
-        "timestamp": datetime.now(timezone.utc),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "metadata": metadata or {}
     }
     db.interactions.insert_one(interaction)
+
+def _update_user_field(users, user_id, update_dict):
+    if not users or user_id == "default_user":
+        return
+    # Try ObjectId first
+    try:
+        res = users.update_one({"_id": ObjectId(user_id)}, update_dict)
+        if hasattr(res, 'matched_count') and res.matched_count > 0:
+            return
+    except (InvalidId, Exception):
+        pass
+    # Fallback to string ID
+    try:
+        users.update_one({"_id": str(user_id)}, update_dict)
+    except Exception:
+        pass
 
 @interactions_bp.route('/like', methods=['POST'])
 def like_movie():
@@ -31,15 +47,10 @@ def like_movie():
         try:
             record_interaction(user_id, movie_id, "like")
             users = get_users_collection()
-            if users is not None and user_id != "default_user":
-                try:
-                    users.update_one({"_id": ObjectId(user_id)}, {"$addToSet": {"likes": movie_id}})
-                except InvalidId:
-                    pass
+            _update_user_field(users, user_id, {"$addToSet": {"likes": movie_id}})
         except Exception:
-            pass # Ignore if DB not running
+            pass
             
-    # Trigger refresh
     recs = compute_recommendations_for_user(user_id)
     return jsonify({"message": "Liked successfully", "recommendations": recs}), 200
 
@@ -69,17 +80,12 @@ def watch_movie():
         try:
             record_interaction(user_id, movie_id, "watch")
             users = get_users_collection()
-            if users is not None and user_id != "default_user":
-                try:
-                    users.update_one({"_id": ObjectId(user_id)}, {"$addToSet": {"watch_history": movie_id}})
-                except InvalidId:
-                    pass
+            _update_user_field(users, user_id, {"$addToSet": {"watch_history": movie_id}})
         except Exception:
             pass
             
     recs = compute_recommendations_for_user(user_id)
     return jsonify({"message": "Added to watch history and updated recommendations", "recommendations": recs}), 200
-
 
 @interactions_bp.route('/watchlist', methods=['POST', 'DELETE'])
 def watchlist():
@@ -92,12 +98,8 @@ def watchlist():
         try:
             record_interaction(user_id, movie_id, action)
             users = get_users_collection()
-            if users is not None and user_id != "default_user":
-                try:
-                    update_action = "$addToSet" if request.method == 'POST' else "$pull"
-                    users.update_one({"_id": ObjectId(user_id)}, {update_action: {"watchlist": movie_id}})
-                except InvalidId:
-                    pass
+            update_op = "$addToSet" if request.method == 'POST' else "$pull"
+            _update_user_field(users, user_id, {update_op: {"watchlist": movie_id}})
         except Exception:
             pass
             

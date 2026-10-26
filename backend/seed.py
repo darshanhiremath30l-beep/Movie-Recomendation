@@ -9,10 +9,6 @@ load_dotenv(env_path)
 MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
 MONGO_DBNAME = os.getenv('MONGO_DBNAME', 'cinematch_db')
 
-client = MongoClient(MONGO_URI)
-db = client[MONGO_DBNAME]
-movies_coll = db['movies']
-
 mock_movies = [
   {
     "movie_id": "tt12735488",
@@ -121,19 +117,27 @@ mock_movies = [
 ]
 
 def seed_db():
+    # Attempt seeding MongoDB Atlas
     try:
-        if movies_coll.count_documents({}) == 0:
-            print("Seeding database with mock movies...")
-            movies_coll.insert_many(mock_movies)
-            print("Database seeded!")
-        else:
-            # Refresh collection with latest movies
-            movies_coll.delete_many({})
-            movies_coll.insert_many(mock_movies)
-            print("Database refreshed with latest movies!")
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=2500)
+        client.admin.command('ping')
+        db = client[MONGO_DBNAME]
+        movies_coll = db['movies']
+        movies_coll.delete_many({})
+        movies_coll.insert_many(mock_movies)
+        print("OK: MongoDB Atlas seeded successfully!")
+        return
     except Exception as e:
-        print(f"Skipping seed (Offline mode): {e}")
+        print(f"INFO: MongoDB Atlas unavailable ({e}). Seeding local JSON database...")
+
+    # Fallback: Seed local persistent JSON database
+    try:
+        from app.local_db import local_db
+        local_db.movies.delete_many({})
+        local_db.movies.insert_many(mock_movies)
+        print("OK: Local JSON database seeded successfully with 8 movies!")
+    except Exception as e:
+        print(f"Error seeding local database: {e}")
 
 if __name__ == '__main__':
     seed_db()
-

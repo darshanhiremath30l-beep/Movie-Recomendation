@@ -1,72 +1,96 @@
+import time
+import certifi
 from pymongo import MongoClient
 from flask import current_app, g
 from bson import ObjectId
-import os
+from .local_db import local_db
+
+_mongo_client = None
+_mongo_db = None
+_mongo_available = None
+_last_check_time = 0
+RETRY_INTERVAL = 60  # Retry real MongoDB at most once per minute if unavailable
 
 def get_db():
     """
-    Establish a connection to the MongoDB database.
-    Reuses the connection globally within the request context logic.
+    Establish or return the active database connection.
+    If MongoDB Atlas is reachable, returns the MongoDB database.
+    If MongoDB is unreachable (bad auth, network error, or offline),
+    seamlessly falls back to local_db (persistent JSON storage)
+    without freezing API requests with repeated 5-second timeouts.
     """
-    if 'db' not in g:
-        try:
-            # Connect using the URI (PyMongo handles SSL/TLS automatically)
-            client = MongoClient(
-                current_app.config['MONGO_URI'],
-                serverSelectionTimeoutMS=5000
-            )
-            # Test the connection
-            client.admin.command('ping')
-            g.client = client
-            g.db = client[current_app.config['MONGO_DBNAME']]
-            print("OK: MongoDB connected successfully")
-        except Exception as conn_error:
-            print(f"WARNING: MongoDB connection failed completely: {conn_error}")
-            # Create a mock client for development
-            g.client = None
-            g.db = None
-            print("WARNING: Using offline mode - database operations will be simulated")
-    return g.db
+    global _mongo_client, _mongo_db, _mongo_available, _last_check_time
+    now = time.time()
+
+    # If MongoDB was successfully connected, return it
+    if _mongo_available is True and _mongo_db is not None:
+        return _mongo_db
+
+    # If MongoDB previously failed, avoid blocking every request; use local_db
+    if _mongo_available is False and (now - _last_check_time < RETRY_INTERVAL):
+        return local_db
+
+    _last_check_time = now
+    try:
+        mongo_uri = current_app.config.get('MONGO_URI') if current_app else None
+        db_name = current_app.config.get('MONGO_DBNAME', 'cinematch_db') if current_app else 'cinematch_db'
+
+        if not mongo_uri:
+            _mongo_available = False
+            return local_db
+
+        client = MongoClient(
+            mongo_uri,
+            serverSelectionTimeoutMS=2000,
+            tlsCAFile=certifi.where()
+        )
+        # Test the connection
+        client.admin.command('ping')
+        _mongo_client = client
+        _mongo_db = client[db_name]
+        _mongo_available = True
+        print("OK: MongoDB Atlas connected successfully")
+        return _mongo_db
+    except Exception as conn_error:
+        if _mongo_available is not False:
+            print(f"WARNING: MongoDB connection failed: {conn_error}")
+            print("INFO: CineMatch is operating in local persistent storage mode (local_db.json).")
+        _mongo_available = False
+        return local_db
 
 def get_collection(collection_name):
-    """Helper to get a collection from the database."""
+    """Helper to get a collection from the active database."""
     db = get_db()
     if db is None:
-        return None  # Offline mode
+        return local_db[collection_name]
     return db[collection_name]
 
 def close_db(e=None):
-    """Closes the connection after the request."""
-    client = g.pop('client', None)
-    if client is not None:
-        client.close()
+    """Teardown handler. MongoClient handles its own connection pooling."""
+    pass
 
 def init_app(app):
-    """Register database teardown with the Flask app."""
+    """Register database teardown and ensure collections exist."""
     app.teardown_appcontext(close_db)
     
-    # Initialize collections on app startup (with error handling)
     with app.app_context():
         try:
             db = get_db()
-            if db is not None:
-                # Ensure collections exist
-                collections = ['users', 'movies', 'watchlist', 'ratings', 'interactions']
-                for collection_name in collections:
-                    if collection_name not in db.list_collection_names():
-                        db.create_collection(collection_name)
+            collections = ['users', 'movies', 'watchlist', 'ratings', 'interactions']
+            existing = db.list_collection_names()
+            for collection_name in collections:
+                if collection_name not in existing:
+                    db.create_collection(collection_name)
+            if _mongo_available:
                 print("OK: MongoDB Connected - All collections initialized")
             else:
-                print("WARNING: Database unavailable - starting in offline mode")
+                print("OK: Local database active - Collections initialized")
         except Exception as e:
-            print(f"WARNING: MongoDB connection warning: {e}")
-            print("WARNING: Flask app will continue without database connection")
-            print("WARNING: Check your MongoDB Atlas connection string and network access")
+            print(f"WARNING: Collection initialization notice: {e}")
 
 def serialize_doc(doc):
     """
-    Recursively converts MongoDB ObjectIds to strings so they can be JSON serialized.
-    Use this wrapping any dict or list of dicts fetched from MongoDB.
+    Recursively converts MongoDB ObjectIds and datetime objects to strings so they can be JSON serialized.
     """
     if not doc:
         return doc
@@ -75,9 +99,10 @@ def serialize_doc(doc):
     if isinstance(doc, dict):
         new_doc = {}
         for k, v in doc.items():
-            # Convert ObjectId to string
             if isinstance(v, ObjectId):
                 new_doc[k] = str(v)
+            elif hasattr(v, 'isoformat'):
+                new_doc[k] = v.isoformat()
             elif isinstance(v, (dict, list)):
                 new_doc[k] = serialize_doc(v)
             else:
