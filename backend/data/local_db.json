@@ -4,7 +4,7 @@
       "_id": "650000000000000000000001",
       "name": "Demo User",
       "email": "demo@example.com",
-      "password": "scrypt:32768:8:1$szE1ooaOrU28n6y7$e07c2cb6a9a743b549c87564427273afb0d021a3b3adb41be83af2cf961a49d4eb112f31221a2d227157fd4f59043886c036c988a3cb4ad1cef796d2ef2c6364",
+      "password": "scrypt:32768:8:1$ZyyUINrD6H1aY7pD$7f0ad4ff572ac7a6083ba10d44e10d7d1aea790b2de601074ec62f1ea1843b13211d115c0cc3f7293cd2db526061b0ef210e05b3ba458265507324a4578e555f",
       "watchlist": [
         "tt12735488",
         "tt15239678"
@@ -24,7 +24,7 @@
       "_id": "650000000000000000000002",
       "name": "Darshan",
       "email": "darshan@example.com",
-      "password": "scrypt:32768:8:1$mX2md8VDFh6m7bO2$c785128cf974dbbe76bb174a556bbbebaf2977af00215d095a0f634708a122fa77e50796c7b629b4eaf36ff0c417f86c38fdcdac81d0a54c706f84991f475194",
+      "password": "scrypt:32768:8:1$T5YWIK6uThrSEJAW$754bf835b2802d972d7265e3ae2483385013006b098cdfb9782d4310487fb3bacd88e609945e80eae0a1ba67841acd650c08fd1710f52d0e09e2ce110befae00",
       "watchlist": [
         "tt12735488",
         "tt28448834"
@@ -32,30 +32,6 @@
       "likes": [
         "tt12735488"
       ],
-      "ratings": [],
-      "watch_history": []
-    },
-    {
-      "_id": "6adf1fdc6dd4f74c4c6ec52c",
-      "name": "Test User",
-      "email": "user_1793007580@example.com",
-      "password": "scrypt:32768:8:1$V0d9Krc1JTuqes0S$4767834293cadb03dfbea9a4ea8438f0cab0f26a9f78916421b7a1a5f49a3ac4231f9ce6f336b8ef6fdbcc63d2613964d9788653d6bc89b1bce4fcce8252bcd0",
-      "created_at": "2026-10-26T09:39:40.995504+00:00",
-      "watchlist": [
-        "tt12735488"
-      ],
-      "likes": [],
-      "ratings": [],
-      "watch_history": []
-    },
-    {
-      "_id": "6adf233a6dd4f74c4c6ec52f",
-      "name": "darshan",
-      "email": "Darshan@gamil.com",
-      "password": "scrypt:32768:8:1$jukpPz3vKzJ6DBRM$9ae5f2b39c51419ce024f0bdfa90c124b3979e283b1288738545b21f9d129c87cc74d2ac318dc55c463876bd7a8dc9c115416c3d73bbca67bcd5c3060db3736b",
-      "created_at": "2026-10-26T09:54:03.278829+00:00",
-      "watchlist": [],
-      "likes": [],
       "ratings": [],
       "watch_history": []
     }
@@ -236,16 +212,8 @@
       "_id": "6ae42f9e8df2f178d49338f0"
     }
   ],
-  "interactions": [
-    {
-      "user_id": "6adf1fdc6dd4f74c4c6ec52c",
-      "movie_id": "tt12735488",
-      "action_type": "add_watchlist",
-      "timestamp": "2026-10-26T09:39:41.244311+00:00",
-      "metadata": {},
-      "_id": "6adf1fdd6dd4f74c4c6ec52d"
-    }
-  ],
+  "interactions": [],
   "watchlist": [],
-  "ratings": []
+  "ratings": [],
+  "liked_movies": []
 }

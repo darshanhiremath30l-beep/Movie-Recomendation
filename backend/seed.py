@@ -1,6 +1,8 @@
 import os
 import certifi
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING
+from werkzeug.security import generate_password_hash
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 
 # Load environment variables from .env
@@ -112,9 +114,90 @@ mock_movies = [
     "synopsis": "In the blood-soaked Kolar Gold Fields, Rocky's name strikes fear into his foes while he battles threats from all sides.",
     "poster": "https://m.media-amazon.com/images/M/MV5BZmQzZjVkZTUtYjI4ZC00ZDJmLWI0ZDUtZTFmMGM1Mzc5ZjIyXkEyXkFqcGc@._V1_SX300.jpg",
     "backdrop": "https://images.unsplash.com/photo-1505686994434-e3cc5abf1330?q=80&w=1200&auto=format&fit=crop",
-    "cast": ["Yash", "Sanjay Dutt", "Raveveena Tandon"],
+    "cast": ["Yash", "Sanjay Dutt", "Raveena Tandon"],
     "director": "Prashanth Neel"
   }
+]
+
+# Demo user credentials
+mock_users = [
+    {
+        "_id": "650000000000000000000001",
+        "name": "Demo User",
+        "email": "demo@example.com",
+        "password": generate_password_hash("password123"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "watchlist": ["tt12735488", "tt15239678"],
+        "likes": ["tt15239678", "tt6263850"],
+        "watch_history": ["tt15239678", "tt15398776"],
+        "ratings": [
+            {"movie_id": "tt15239678", "rating": 9.0}
+        ]
+    }
+]
+
+# Watchlist collection records
+mock_watchlist = [
+    {
+        "user_id": "650000000000000000000001",
+        "user_email": "demo@example.com",
+        "movie_id": "tt12735488",
+        "title": "Kalki 2898 AD",
+        "year": 2024,
+        "poster": "https://m.media-amazon.com/images/M/MV5BZjJhMTFiN2UtMmQ4MC00MTZjLTk3NDYtYWRkNTFmNDQwNDFjXkEyXkFqcGc@._V1_SX300.jpg",
+        "added_at": datetime.now(timezone.utc).isoformat()
+    },
+    {
+        "user_id": "650000000000000000000001",
+        "user_email": "demo@example.com",
+        "movie_id": "tt15239678",
+        "title": "Dune: Part Two",
+        "year": 2024,
+        "poster": "https://m.media-amazon.com/images/M/MV5BN2QyZGU4ZDctOWMzMy00NTc5LThlOGQtODhmNDI1NmY5YzAwXkEyXkFqcGc@._V1_SX300.jpg",
+        "added_at": datetime.now(timezone.utc).isoformat()
+    }
+]
+
+# Liked movies collection records
+mock_liked_movies = [
+    {
+        "user_id": "650000000000000000000001",
+        "user_email": "demo@example.com",
+        "movie_id": "tt15239678",
+        "title": "Dune: Part Two",
+        "poster": "https://m.media-amazon.com/images/M/MV5BN2QyZGU4ZDctOWMzMy00NTc5LThlOGQtODhmNDI1NmY5YzAwXkEyXkFqcGc@._V1_SX300.jpg",
+        "liked_at": datetime.now(timezone.utc).isoformat()
+    },
+    {
+        "user_id": "650000000000000000000001",
+        "user_email": "demo@example.com",
+        "movie_id": "tt6263850",
+        "title": "Deadpool & Wolverine",
+        "poster": "https://m.media-amazon.com/images/M/MV5BNzRiMjg0MzUtNTNhYi00N2Q5LWEwMzMtYWJiM2M1M2VkOGU1XkEyXkFqcGc@._V1_SX300.jpg",
+        "liked_at": datetime.now(timezone.utc).isoformat()
+    }
+]
+
+# Recently watched movies collection records
+mock_recently_watched = [
+    {
+        "user_id": "650000000000000000000001",
+        "user_email": "demo@example.com",
+        "movie_id": "tt15239678",
+        "title": "Dune: Part Two",
+        "duration": "2h 46m",
+        "poster": "https://m.media-amazon.com/images/M/MV5BN2QyZGU4ZDctOWMzMy00NTc5LThlOGQtODhmNDI1NmY5YzAwXkEyXkFqcGc@._V1_SX300.jpg",
+        "watched_at": datetime.now(timezone.utc).isoformat()
+    },
+    {
+        "user_id": "650000000000000000000001",
+        "user_email": "demo@example.com",
+        "movie_id": "tt15398776",
+        "title": "Oppenheimer",
+        "duration": "3h 0m",
+        "poster": "https://m.media-amazon.com/images/M/MV5BMDBmYTZjNjUtN2M1MS00MTQ2LTkNEtLTlhNzNhNTU0XkEyXkFqcGc@._V1_SX300.jpg",
+        "watched_at": datetime.now(timezone.utc).isoformat()
+    }
 ]
 
 def seed_db():
@@ -135,10 +218,54 @@ def seed_db():
             client = MongoClient(MONGO_URI, **client_kwargs)
             client.admin.command('ping')
             db = client[MONGO_DBNAME]
+
+            # 1. Movies table
             movies_coll = db['movies']
             movies_coll.delete_many({})
-            res = movies_coll.insert_many(mock_movies)
-            print(f"SUCCESS: MongoDB database '{MONGO_DBNAME}' seeded with {len(res.inserted_ids)} movies!")
+            res_m = movies_coll.insert_many(mock_movies)
+            print(f"SUCCESS: 'movies' table seeded with {len(res_m.inserted_ids)} movies.")
+
+            # 2. Users (Login credentials) table
+            users_coll = db['users']
+            users_coll.delete_many({})
+            res_u = users_coll.insert_many(mock_users)
+            try:
+                users_coll.create_index([("email", ASCENDING)], unique=True)
+            except Exception:
+                pass
+            print(f"SUCCESS: 'users' (login credentials) table seeded with {len(res_u.inserted_ids)} user (demo@example.com / password123).")
+
+            # 3. Watchlist table
+            wl_coll = db['watchlist']
+            wl_coll.delete_many({})
+            res_w = wl_coll.insert_many(mock_watchlist)
+            try:
+                wl_coll.create_index([("user_id", ASCENDING), ("movie_id", ASCENDING)], unique=True)
+            except Exception:
+                pass
+            print(f"SUCCESS: 'watchlist' table seeded with {len(res_w.inserted_ids)} items.")
+
+            # 4. Liked movies table
+            likes_coll = db['liked_movies']
+            likes_coll.delete_many({})
+            res_l = likes_coll.insert_many(mock_liked_movies)
+            try:
+                likes_coll.create_index([("user_id", ASCENDING), ("movie_id", ASCENDING)], unique=True)
+            except Exception:
+                pass
+            print(f"SUCCESS: 'liked_movies' table seeded with {len(res_l.inserted_ids)} items.")
+
+            # 5. Recently watched table
+            history_coll = db['recently_watched']
+            history_coll.delete_many({})
+            res_h = history_coll.insert_many(mock_recently_watched)
+            try:
+                history_coll.create_index([("user_id", ASCENDING), ("movie_id", ASCENDING)], unique=True)
+            except Exception:
+                pass
+            print(f"SUCCESS: 'recently_watched' table seeded with {len(res_h.inserted_ids)} items.")
+
+            print("\nALL 5 MongoDB collections/tables are ready to view in MongoDB Compass!")
             return
         except Exception as e:
             print(f"WARNING: MongoDB unavailable ({e}).")
@@ -150,7 +277,9 @@ def seed_db():
         from app.local_db import local_db
         local_db.movies.delete_many({})
         local_db.movies.insert_many(mock_movies)
-        print("SUCCESS: Local JSON database seeded successfully with 8 initial movies!")
+        local_db.users.delete_many({})
+        local_db.users.insert_many(mock_users)
+        print("SUCCESS: Local JSON database seeded successfully with mock data!")
     except Exception as e:
         print(f"Error seeding local database: {e}")
 

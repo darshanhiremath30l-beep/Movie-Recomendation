@@ -34,9 +34,32 @@ const MovieCard = ({ movie }) => {
     <div className="movie-card animate-fade-in group" style={{ position: 'relative' }}>
       <Link to={`/movie/${movie.id}`} style={{ display: 'block', height: '100%', textDecoration: 'none', color: 'inherit' }}>
         <div className="movie-poster-wrapper" style={{ height: '100%', position: 'relative' }}>
+          {movie.match_score && (
+            <div style={{
+              position: 'absolute',
+              top: '10px',
+              left: '10px',
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(59, 130, 246, 0.95))',
+              color: '#ffffff',
+              padding: '3px 8px',
+              borderRadius: '12px',
+              fontSize: '0.72rem',
+              fontWeight: '700',
+              letterSpacing: '0.4px',
+              zIndex: 6,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.4)'
+            }}>
+              ✨ {movie.match_score}
+            </div>
+          )}
           <img src={movie.poster} alt={movie.title} className="movie-poster" loading="lazy" />
           
           <div className="movie-overlay">
+            {movie.ai_reason && (
+              <div style={{ fontSize: '0.72rem', color: '#34d399', marginBottom: '4px', fontWeight: 600 }}>
+                {movie.ai_reason}
+              </div>
+            )}
             <h3 className="movie-title">{movie.title}</h3>
             
             <div className="movie-meta">

@@ -147,9 +147,9 @@ export const getWatchlist = async (userId) => {
   }
 };
 
-export const getRecommendations = async () => {
+export const getRecommendations = async (userId = "default_user") => {
   try {
-    const response = await fetch(`${BASE_URL}/recommendations/for-you?user_id=default_user`);
+    const response = await fetch(`${BASE_URL}/recommendations/for-you?user_id=${encodeURIComponent(userId)}`);
     return await response.json();
   } catch (error) {
     console.error("Error fetching recommendations:", error);

@@ -1,5 +1,11 @@
 from flask import Blueprint, jsonify, request
-from ..db import get_users_collection, serialize_doc
+from ..db import (
+    get_users_collection, 
+    get_watchlist_collection, 
+    get_liked_movies_collection, 
+    get_recently_watched_collection, 
+    serialize_doc
+)
 from ..local_db import local_db
 from ..services.omdb_service import get_movie_details
 from bson import ObjectId
@@ -10,12 +16,17 @@ users_bp = Blueprint('users', __name__)
 @users_bp.route('/<user_id>/watchlist', methods=['GET'])
 def get_watchlist(user_id):
     try:
-        users = get_users_collection()
-        if users is None:
-            users = local_db['users']
-            
+        # Check dedicated watchlist collection first
+        wl_coll = get_watchlist_collection()
+        if wl_coll is not None:
+            items = list(wl_coll.find({"user_id": str(user_id)}, {"_id": 0}))
+            if items:
+                # If records have full movie details, return them directly
+                return jsonify({"data": serialize_doc(items)}), 200
+
+        # Fallback: check user's watchlist array
+        users = get_users_collection() or local_db['users']
         user = None
-        # Try finding by ObjectId or by string ID
         try:
             user = users.find_one({"_id": ObjectId(user_id)})
         except (InvalidId, Exception):
@@ -28,7 +39,6 @@ def get_watchlist(user_id):
             return jsonify({"message": "User not found or empty watchlist", "data": []}), 200
             
         watchlist_ids = user.get("watchlist", [])
-        
         populated_movies = []
         for movie_id in watchlist_ids:
             details = get_movie_details(movie_id)
@@ -37,6 +47,28 @@ def get_watchlist(user_id):
                 
         return jsonify({"data": populated_movies}), 200
         
+    except Exception as e:
+        return jsonify({"error": str(e), "data": []}), 500
+
+@users_bp.route('/<user_id>/recently-watched', methods=['GET'])
+def get_recently_watched(user_id):
+    try:
+        rw_coll = get_recently_watched_collection()
+        if rw_coll is not None:
+            items = list(rw_coll.find({"user_id": str(user_id)}).sort("watched_at", -1))
+            return jsonify({"data": serialize_doc(items)}), 200
+        return jsonify({"data": []}), 200
+    except Exception as e:
+        return jsonify({"error": str(e), "data": []}), 500
+
+@users_bp.route('/<user_id>/liked', methods=['GET'])
+def get_liked_movies(user_id):
+    try:
+        liked_coll = get_liked_movies_collection()
+        if liked_coll is not None:
+            items = list(liked_coll.find({"user_id": str(user_id)}).sort("liked_at", -1))
+            return jsonify({"data": serialize_doc(items)}), 200
+        return jsonify({"data": []}), 200
     except Exception as e:
         return jsonify({"error": str(e), "data": []}), 500
 

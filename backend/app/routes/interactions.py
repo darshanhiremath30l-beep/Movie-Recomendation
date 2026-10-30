@@ -1,6 +1,13 @@
 from flask import Blueprint, jsonify, request
 from ..services.recommendation_service import compute_recommendations_for_user
-from ..db import get_db, get_users_collection
+from ..services.omdb_service import get_movie_details
+from ..db import (
+    get_db, 
+    get_users_collection, 
+    get_watchlist_collection, 
+    get_liked_movies_collection, 
+    get_recently_watched_collection
+)
 from bson import ObjectId
 from bson.errors import InvalidId
 from datetime import datetime, timezone
@@ -19,10 +26,41 @@ def record_interaction(user_id, movie_id, action_type, metadata=None):
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "metadata": metadata or {}
     }
-    db.interactions.insert_one(interaction)
+    try:
+        db.interactions.insert_one(interaction)
+    except Exception:
+        pass
+
+def _get_movie_info(movie_id):
+    """Helper to get movie title & poster for table records."""
+    db = get_db()
+    title = ""
+    poster = ""
+    duration = ""
+    try:
+        if db is not None:
+            m = db.movies.find_one({"movie_id": movie_id}) or db.movies.find_one({"id": movie_id})
+            if m:
+                title = m.get("title", "")
+                poster = m.get("poster", "")
+                duration = m.get("duration", "")
+    except Exception:
+        pass
+        
+    if not title:
+        try:
+            details = get_movie_details(movie_id)
+            if details:
+                title = details.get("title", "")
+                poster = details.get("poster", "")
+                duration = details.get("duration", "")
+        except Exception:
+            pass
+            
+    return {"title": title, "poster": poster, "duration": duration}
 
 def _update_user_field(users, user_id, update_dict):
-    if not users or user_id == "default_user":
+    if users is None or user_id == "default_user":
         return
     # Try ObjectId first
     try:
@@ -34,8 +72,8 @@ def _update_user_field(users, user_id, update_dict):
     # Fallback to string ID
     try:
         users.update_one({"_id": str(user_id)}, update_dict)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Notice _update_user_field: {e}")
 
 @interactions_bp.route('/like', methods=['POST'])
 def like_movie():
@@ -48,6 +86,22 @@ def like_movie():
             record_interaction(user_id, movie_id, "like")
             users = get_users_collection()
             _update_user_field(users, user_id, {"$addToSet": {"likes": movie_id}})
+            
+            # Sync to dedicated 'liked_movies' collection
+            liked_coll = get_liked_movies_collection()
+            if liked_coll is not None:
+                movie_info = _get_movie_info(movie_id)
+                liked_coll.update_one(
+                    {"user_id": str(user_id), "movie_id": movie_id},
+                    {"$set": {
+                        "user_id": str(user_id),
+                        "movie_id": movie_id,
+                        "title": movie_info["title"],
+                        "poster": movie_info["poster"],
+                        "liked_at": datetime.now(timezone.utc).isoformat()
+                    }},
+                    upsert=True
+                )
         except Exception:
             pass
             
@@ -64,6 +118,20 @@ def rate_movie():
     if movie_id and rating:
         try:
             record_interaction(user_id, movie_id, "rate", {"rating": rating})
+            db = get_db()
+            if db is not None:
+                movie_info = _get_movie_info(movie_id)
+                db.ratings.update_one(
+                    {"user_id": str(user_id), "movie_id": movie_id},
+                    {"$set": {
+                        "user_id": str(user_id),
+                        "movie_id": movie_id,
+                        "rating": float(rating),
+                        "title": movie_info["title"],
+                        "rated_at": datetime.now(timezone.utc).isoformat()
+                    }},
+                    upsert=True
+                )
         except Exception:
             pass
             
@@ -81,6 +149,23 @@ def watch_movie():
             record_interaction(user_id, movie_id, "watch")
             users = get_users_collection()
             _update_user_field(users, user_id, {"$addToSet": {"watch_history": movie_id}})
+            
+            # Sync to dedicated 'recently_watched' collection
+            rw_coll = get_recently_watched_collection()
+            if rw_coll is not None:
+                movie_info = _get_movie_info(movie_id)
+                rw_coll.update_one(
+                    {"user_id": str(user_id), "movie_id": movie_id},
+                    {"$set": {
+                        "user_id": str(user_id),
+                        "movie_id": movie_id,
+                        "title": movie_info["title"],
+                        "duration": movie_info["duration"],
+                        "poster": movie_info["poster"],
+                        "watched_at": datetime.now(timezone.utc).isoformat()
+                    }},
+                    upsert=True
+                )
         except Exception:
             pass
             
@@ -100,6 +185,25 @@ def watchlist():
             users = get_users_collection()
             update_op = "$addToSet" if request.method == 'POST' else "$pull"
             _update_user_field(users, user_id, {update_op: {"watchlist": movie_id}})
+            
+            # Sync to dedicated 'watchlist' collection
+            wl_coll = get_watchlist_collection()
+            if wl_coll is not None:
+                if request.method == 'POST':
+                    movie_info = _get_movie_info(movie_id)
+                    wl_coll.update_one(
+                        {"user_id": str(user_id), "movie_id": movie_id},
+                        {"$set": {
+                            "user_id": str(user_id),
+                            "movie_id": movie_id,
+                            "title": movie_info["title"],
+                            "poster": movie_info["poster"],
+                            "added_at": datetime.now(timezone.utc).isoformat()
+                        }},
+                        upsert=True
+                    )
+                else:
+                    wl_coll.delete_one({"user_id": str(user_id), "movie_id": movie_id})
         except Exception:
             pass
             

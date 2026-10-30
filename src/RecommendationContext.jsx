@@ -17,10 +17,11 @@ export const RecommendationProvider = ({ children }) => {
   useEffect(() => {
     // Check if user is logged in (from localStorage)
     const savedUser = localStorage.getItem('user');
+    let activeUser = null;
     if (savedUser) {
       try {
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
+        activeUser = JSON.parse(savedUser);
+        setUser(activeUser);
         setIsAuthenticated(true);
       } catch (error) {
         console.error('Error parsing saved user data:', error);
@@ -28,7 +29,8 @@ export const RecommendationProvider = ({ children }) => {
       }
     }
 
-    fetchRecommendations();
+    const initialUserId = activeUser && (activeUser._id || activeUser.id) ? (activeUser._id || activeUser.id) : "default_user";
+    fetchRecommendations(initialUserId);
   }, []);
 
   // Authentication functions
@@ -43,6 +45,8 @@ export const RecommendationProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(userData));
 
       showToast('Login successful!', 'success');
+      const uid = userData._id || userData.id;
+      fetchRecommendations(uid);
       return { success: true };
     } catch (error) {
       showToast(error.message || 'Login failed', 'error');
@@ -97,12 +101,14 @@ export const RecommendationProvider = ({ children }) => {
     setIsAuthenticated(false);
     localStorage.removeItem('user');
     showToast('Logged out successfully', 'info');
+    fetchRecommendations('default_user');
   };
 
-  const fetchRecommendations = async () => {
+  const fetchRecommendations = async (customUserId) => {
     setIsLoading(true);
     try {
-      const res = await getRecommendations();
+      const activeId = customUserId || (user && (user._id || user.id)) || "default_user";
+      const res = await getRecommendations(activeId);
       if (res && res.data) {
         setRecommendations(res.data);
       } else {

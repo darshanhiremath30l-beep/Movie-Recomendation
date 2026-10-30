@@ -100,7 +100,7 @@ def init_app(app):
     with app.app_context():
         try:
             db = get_db()
-            collections = ['users', 'movies', 'watchlist', 'ratings', 'interactions']
+            collections = ['users', 'movies', 'watchlist', 'liked_movies', 'recently_watched', 'ratings', 'interactions']
             existing = db.list_collection_names()
             for collection_name in collections:
                 if collection_name not in existing:
@@ -146,6 +146,12 @@ def get_ratings_collection():
 
 def get_watchlist_collection():
     return get_collection('watchlist')
+
+def get_liked_movies_collection():
+    return get_collection('liked_movies')
+
+def get_recently_watched_collection():
+    return get_collection('recently_watched')
 
 def get_interactions_collection():
     return get_collection('interactions')
