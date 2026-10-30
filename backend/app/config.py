@@ -11,9 +11,9 @@ class Config:
     """Base configuration."""
     SECRET_KEY = os.environ.get('SECRET_KEY', 'default-secret-key-for-dev')
 
-    # MongoDB Configuration
-    MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
-    MONGO_DBNAME = os.environ.get('MONGO_DBNAME', 'cinematch_db')
+    # MongoDB Configuration (leave empty for local fallback)
+    MONGO_URI = os.environ.get('MONGO_URI', '').strip()
+    MONGO_DBNAME = os.environ.get('MONGO_DBNAME', 'cinematch_db').strip()
     
 class DevelopmentConfig(Config):
     DEBUG = True

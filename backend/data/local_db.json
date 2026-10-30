@@ -47,11 +47,21 @@
       "likes": [],
       "ratings": [],
       "watch_history": []
+    },
+    {
+      "_id": "6adf233a6dd4f74c4c6ec52f",
+      "name": "darshan",
+      "email": "Darshan@gamil.com",
+      "password": "scrypt:32768:8:1$jukpPz3vKzJ6DBRM$9ae5f2b39c51419ce024f0bdfa90c124b3979e283b1288738545b21f9d129c87cc74d2ac318dc55c463876bd7a8dc9c115416c3d73bbca67bcd5c3060db3736b",
+      "created_at": "2026-10-26T09:54:03.278829+00:00",
+      "watchlist": [],
+      "likes": [],
+      "ratings": [],
+      "watch_history": []
     }
   ],
   "movies": [
     {
-      "_id": "tt12735488",
       "movie_id": "tt12735488",
       "title": "Kalki 2898 AD",
       "genres": [
@@ -71,10 +81,10 @@
         "Kamal Haasan",
         "Deepika Padukone"
       ],
-      "director": "Nag Ashwin"
+      "director": "Nag Ashwin",
+      "_id": "6ae42f9e8df2f178d49338e9"
     },
     {
-      "_id": "tt15239678",
       "movie_id": "tt15239678",
       "title": "Dune: Part Two",
       "genres": [
@@ -93,10 +103,10 @@
         "Zendaya",
         "Rebecca Ferguson"
       ],
-      "director": "Denis Villeneuve"
+      "director": "Denis Villeneuve",
+      "_id": "6ae42f9e8df2f178d49338ea"
     },
     {
-      "_id": "tt28448834",
       "movie_id": "tt28448834",
       "title": "Stree 2",
       "genres": [
@@ -115,10 +125,10 @@
         "Shraddha Kapoor",
         "Pankaj Tripathi"
       ],
-      "director": "Amar Kaushik"
+      "director": "Amar Kaushik",
+      "_id": "6ae42f9e8df2f178d49338eb"
     },
     {
-      "_id": "tt6263850",
       "movie_id": "tt6263850",
       "title": "Deadpool & Wolverine",
       "genres": [
@@ -137,10 +147,10 @@
         "Hugh Jackman",
         "Emma Corrin"
       ],
-      "director": "Shawn Levy"
+      "director": "Shawn Levy",
+      "_id": "6ae42f9e8df2f178d49338ec"
     },
     {
-      "_id": "tt15398776",
       "movie_id": "tt15398776",
       "title": "Oppenheimer",
       "genres": [
@@ -159,10 +169,10 @@
         "Matt Damon",
         "Robert Downey Jr."
       ],
-      "director": "Christopher Nolan"
+      "director": "Christopher Nolan",
+      "_id": "6ae42f9e8df2f178d49338ed"
     },
     {
-      "_id": "tt15354916",
       "movie_id": "tt15354916",
       "title": "Jawan",
       "genres": [
@@ -180,10 +190,10 @@
         "Nayanthara",
         "Vijay Sethupathi"
       ],
-      "director": "Atlee"
+      "director": "Atlee",
+      "_id": "6ae42f9e8df2f178d49338ee"
     },
     {
-      "_id": "tt8178634",
       "movie_id": "tt8178634",
       "title": "RRR",
       "genres": [
@@ -201,10 +211,10 @@
         "Ram Charan",
         "Ajay Devgn"
       ],
-      "director": "S.S. Rajamouli"
+      "director": "S.S. Rajamouli",
+      "_id": "6ae42f9e8df2f178d49338ef"
     },
     {
-      "_id": "tt10698680",
       "movie_id": "tt10698680",
       "title": "K.G.F: Chapter 2",
       "genres": [
@@ -220,9 +230,10 @@
       "cast": [
         "Yash",
         "Sanjay Dutt",
-        "Raveena Tandon"
+        "Raveveena Tandon"
       ],
-      "director": "Prashanth Neel"
+      "director": "Prashanth Neel",
+      "_id": "6ae42f9e8df2f178d49338f0"
     }
   ],
   "interactions": [

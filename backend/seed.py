@@ -1,4 +1,5 @@
 import os
+import certifi
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
@@ -6,8 +7,8 @@ from dotenv import load_dotenv
 env_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(env_path)
 
-MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
-MONGO_DBNAME = os.getenv('MONGO_DBNAME', 'cinematch_db')
+MONGO_URI = os.getenv('MONGO_URI', '').strip()
+MONGO_DBNAME = os.getenv('MONGO_DBNAME', 'cinematch_db').strip()
 
 mock_movies = [
   {
@@ -111,31 +112,45 @@ mock_movies = [
     "synopsis": "In the blood-soaked Kolar Gold Fields, Rocky's name strikes fear into his foes while he battles threats from all sides.",
     "poster": "https://m.media-amazon.com/images/M/MV5BZmQzZjVkZTUtYjI4ZC00ZDJmLWI0ZDUtZTFmMGM1Mzc5ZjIyXkEyXkFqcGc@._V1_SX300.jpg",
     "backdrop": "https://images.unsplash.com/photo-1505686994434-e3cc5abf1330?q=80&w=1200&auto=format&fit=crop",
-    "cast": ["Yash", "Sanjay Dutt", "Raveena Tandon"],
+    "cast": ["Yash", "Sanjay Dutt", "Raveveena Tandon"],
     "director": "Prashanth Neel"
   }
 ]
 
 def seed_db():
-    # Attempt seeding MongoDB Atlas
-    try:
-        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=2500)
-        client.admin.command('ping')
-        db = client[MONGO_DBNAME]
-        movies_coll = db['movies']
-        movies_coll.delete_many({})
-        movies_coll.insert_many(mock_movies)
-        print("OK: MongoDB Atlas seeded successfully!")
-        return
-    except Exception as e:
-        print(f"INFO: MongoDB Atlas unavailable ({e}). Seeding local JSON database...")
+    placeholders = ["your-username", "your-password", "<username>", "<password>", "cluster-name", "<db_password>"]
+    has_placeholder = any(p in MONGO_URI for p in placeholders)
 
-    # Fallback: Seed local persistent JSON database
+    # Attempt seeding MongoDB Atlas / Server if configured
+    if MONGO_URI and not has_placeholder:
+        try:
+            client_kwargs = {
+                "serverSelectionTimeoutMS": 4000,
+                "connectTimeoutMS": 4000
+            }
+            if "mongodb+srv://" in MONGO_URI or "ssl=true" in MONGO_URI.lower():
+                client_kwargs["tlsCAFile"] = certifi.where()
+
+            print(f"Connecting to MongoDB database '{MONGO_DBNAME}'...")
+            client = MongoClient(MONGO_URI, **client_kwargs)
+            client.admin.command('ping')
+            db = client[MONGO_DBNAME]
+            movies_coll = db['movies']
+            movies_coll.delete_many({})
+            res = movies_coll.insert_many(mock_movies)
+            print(f"SUCCESS: MongoDB database '{MONGO_DBNAME}' seeded with {len(res.inserted_ids)} movies!")
+            return
+        except Exception as e:
+            print(f"WARNING: MongoDB unavailable ({e}).")
+    else:
+        print("INFO: No valid external MONGO_URI found in backend/.env.")
+
+    # Always ensure local JSON database is seeded as well
     try:
         from app.local_db import local_db
         local_db.movies.delete_many({})
         local_db.movies.insert_many(mock_movies)
-        print("OK: Local JSON database seeded successfully with 8 movies!")
+        print("SUCCESS: Local JSON database seeded successfully with 8 initial movies!")
     except Exception as e:
         print(f"Error seeding local database: {e}")
 

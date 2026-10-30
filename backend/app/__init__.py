@@ -13,7 +13,7 @@ def create_app(config_name='default'):
     CORS(app)
     
     # Initialize DB connection handlers
-    from .db import init_app as init_db, get_db
+    from .db import init_app as init_db, get_db, is_mongo_active
     init_db(app)
     
     # Register Blueprints
@@ -32,22 +32,19 @@ def create_app(config_name='default'):
     # Basic root endpoint check
     @app.route('/api/health')
     def health_check():
-        db_status = "disconnected"
-        try:
-            db = get_db()
-            if db is not None:
-                # Ping database to verify connection
-                db.command('ping')
-                db_status = "connected"
-            else:
-                db_status = "offline_mode"
-        except Exception as e:
-            db_status = f"error: {str(e)}"
+        db = get_db()
+        if is_mongo_active():
+            db_status = "mongodb_connected"
+            db_type = "MongoDB Server / Atlas"
+        else:
+            db_status = "local_storage_mode"
+            db_type = "Local JSON Storage (local_db.json)"
             
         return {
             'status': 'healthy', 
             'message': 'CineMatch AI API is running!',
-            'db_status': db_status
+            'db_status': db_status,
+            'database_type': db_type
         }
         
     return app
