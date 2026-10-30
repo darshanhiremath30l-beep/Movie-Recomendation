@@ -1,9 +1,10 @@
 .hero-carousel-container {
   position: relative;
   height: 85vh;
-  min-height: 600px;
+  min-height: 620px;
   width: 100%;
   overflow: hidden;
+  background: #040406;
 }
 
 .hero-slide {
@@ -13,7 +14,7 @@
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
   z-index: 1;
 }
@@ -32,12 +33,12 @@
   height: 100%;
   object-fit: cover;
   z-index: -2;
-  transition: transform 8s ease-out;
-  transform: scale(1.05); /* Slight scale to prevent borders during load */
+  transition: transform 9s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: scale(1.05);
 }
 
 .hero-slide.active .hero-backdrop {
-  transform: scale(1.1);
+  transform: scale(1.12);
 }
 
 .hero-overlay {
@@ -46,24 +47,26 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--bg-primary) 0%,
-    rgba(10, 10, 15, 0.9) 20%,
-    rgba(10, 10, 15, 0.3) 60%,
-    rgba(10, 10, 15, 0) 100%
-  ),
-  linear-gradient(
-    0deg,
-    var(--bg-primary) 0%,
-    rgba(10, 10, 15, 0) 40%
-  );
+  background: 
+    linear-gradient(
+      90deg,
+      #040406 0%,
+      rgba(4, 4, 6, 0.94) 28%,
+      rgba(4, 4, 6, 0.45) 65%,
+      rgba(4, 4, 6, 0.1) 100%
+    ),
+    linear-gradient(
+      0deg,
+      #040406 0%,
+      rgba(4, 4, 6, 0.8) 20%,
+      rgba(4, 4, 6, 0) 55%
+    );
   z-index: -1;
 }
 
 .hero-content {
   padding: 0 5%;
-  max-width: 800px;
+  max-width: 820px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -72,11 +75,15 @@
 }
 
 .hero-title {
-  font-size: 4rem;
+  font-size: 4.2rem;
+  font-weight: 800;
   margin-bottom: 16px;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
   opacity: 0;
   transform: translateY(30px);
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.9);
 }
 
 .hero-slide.active .hero-title {
@@ -90,10 +97,10 @@
   gap: 16px;
   margin-bottom: 24px;
   color: var(--text-secondary);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
 }
 
 .hero-slide.active .hero-meta {
@@ -101,30 +108,35 @@
   transform: translateY(0);
 }
 
+/* Glassy Rating Pill */
 .hero-rating {
   display: flex;
   align-items: center;
   gap: 6px;
   color: #fbbf24;
-  font-weight: 600;
-  background: rgba(0,0,0,0.4);
-  padding: 4px 10px;
+  font-weight: 700;
+  background: rgba(12, 12, 20, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 5px 14px;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 4px 15px rgba(0, 0, 0, 0.6);
 }
 
 .hero-synopsis {
-  font-size: 1.2rem;
-  color: var(--text-secondary);
+  font-size: 1.15rem;
+  color: #cbd5e1;
   margin-bottom: 36px;
-  line-height: 1.6;
+  line-height: 1.65;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.7s;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.55s;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
 .hero-slide.active .hero-synopsis {
@@ -137,7 +149,7 @@
   gap: 16px;
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.9s;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s;
 }
 
 .hero-slide.active .hero-actions {
@@ -145,22 +157,30 @@
   transform: translateY(0);
 }
 
+/* Glassy Indicators */
 .carousel-indicators {
   position: absolute;
-  bottom: 40px;
+  bottom: 36px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
   z-index: 20;
+  padding: 8px 14px;
+  background: rgba(8, 8, 14, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .indicator {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
   transition: all var(--transition-normal);
+  cursor: pointer;
 }
 
 .indicator:hover {
@@ -168,30 +188,30 @@
 }
 
 .indicator.active {
-  width: 32px;
+  width: 28px;
   border-radius: var(--radius-full);
-  background: var(--accent-primary);
-  box-shadow: var(--shadow-glow);
+  background: linear-gradient(135deg, #00f0ff 0%, #8b5cf6 100%);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
 }
 
 @media (max-width: 768px) {
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 2.6rem;
   }
   .hero-synopsis {
-    font-size: 1rem;
-    -webkit-line-clamp: 4;
+    font-size: 0.98rem;
+    -webkit-line-clamp: 3;
   }
   .hero-carousel-container {
     height: 75vh;
-    min-height: 500px;
+    min-height: 520px;
   }
   .hero-overlay {
     background: linear-gradient(
       0deg,
-      var(--bg-primary) 0%,
-      rgba(10, 10, 15, 0.8) 50%,
-      rgba(10, 10, 15, 0.4) 100%
+      #040406 0%,
+      rgba(4, 4, 6, 0.88) 50%,
+      rgba(4, 4, 6, 0.4) 100%
     );
   }
 }

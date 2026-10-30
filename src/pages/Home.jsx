@@ -59,8 +59,8 @@ const Home = () => {
         {recommendations && recommendations.length > 0 && (
           <AnimatedSection className="mb-12" style={{ marginTop: '80px' }}>
             <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <h2 style={{ background: 'linear-gradient(to right, #10b981, #3b82f6)', WebkitBackgroundClip: 'text', color: 'transparent' }}>Recommended for You</h2>
-              <span className="smart-badge" style={{ fontSize: '12px', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', padding: '4px 10px', borderRadius: '20px' }}>Real-time Suggestion</span>
+              <h2 style={{ background: 'linear-gradient(to right, #00f0ff, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Recommended for You</h2>
+              <span className="smart-badge" style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '20px' }}>✨ Real-time AI</span>
             </div>
             {isLoading ? (
               <div style={{ color: 'var(--text-secondary)' }}>Analyzing preferences...</div>

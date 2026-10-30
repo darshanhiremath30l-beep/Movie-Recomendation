@@ -39,15 +39,18 @@ const MovieCard = ({ movie }) => {
               position: 'absolute',
               top: '10px',
               left: '10px',
-              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(59, 130, 246, 0.95))',
-              color: '#ffffff',
-              padding: '3px 8px',
-              borderRadius: '12px',
+              background: 'rgba(8, 8, 14, 0.78)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(0, 240, 255, 0.45)',
+              color: '#00f0ff',
+              padding: '3px 9px',
+              borderRadius: '20px',
               fontSize: '0.72rem',
               fontWeight: '700',
               letterSpacing: '0.4px',
               zIndex: 6,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.4)'
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.35)'
             }}>
               ✨ {movie.match_score}
             </div>
@@ -56,7 +59,7 @@ const MovieCard = ({ movie }) => {
           
           <div className="movie-overlay">
             {movie.ai_reason && (
-              <div style={{ fontSize: '0.72rem', color: '#34d399', marginBottom: '4px', fontWeight: 600 }}>
+              <div style={{ fontSize: '0.72rem', color: '#00f0ff', marginBottom: '4px', fontWeight: 600, textShadow: '0 0 10px rgba(0, 240, 255, 0.4)' }}>
                 {movie.ai_reason}
               </div>
             )}

@@ -3,61 +3,71 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 70px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 5%;
   z-index: 1000;
   transition: all var(--transition-normal);
+  background: rgba(4, 4, 6, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .navbar.scrolled {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-sm);
+  background: rgba(6, 6, 10, 0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 -1px 0 0 rgba(0, 240, 255, 0.15);
 }
 
 .nav-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-family: var(--font-heading);
-  font-size: 1.5rem;
+  font-size: 1.55rem;
   font-weight: 800;
   color: var(--text-primary);
+  letter-spacing: -0.03em;
 }
 
 .nav-brand .icon {
   color: var(--accent-primary);
+  filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.6));
 }
 
 .nav-links {
   display: flex;
-  gap: 24px;
+  gap: 28px;
 }
 
 .nav-item {
   color: var(--text-secondary);
   font-weight: 500;
+  font-size: 0.95rem;
   position: relative;
+  padding: 6px 0;
+  transition: color var(--transition-fast);
 }
 
 .nav-item::after {
   content: '';
   position: absolute;
-  bottom: -4px;
+  bottom: 0px;
   left: 0;
   width: 0;
   height: 2px;
   background: var(--accent-gradient);
+  box-shadow: 0 0 8px var(--accent-primary);
   transition: width var(--transition-normal);
+  border-radius: var(--radius-full);
 }
 
 .nav-item:hover, .nav-item.active {
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .nav-item:hover::after, .nav-item.active::after {
@@ -70,25 +80,29 @@
   gap: 16px;
 }
 
+/* Glassy Black Search Input */
 .search-container {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
+  background: rgba(18, 18, 28, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: var(--radius-full);
-  padding: 8px 16px;
+  padding: 8px 18px;
   transition: all var(--transition-normal);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
 }
 
 .search-container:focus-within {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--accent-primary);
-  box-shadow: var(--shadow-glow);
-  width: 250px;
+  background: rgba(22, 22, 34, 0.85);
+  border-color: rgba(0, 240, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  width: 260px;
 }
 
 .search-container:not(:focus-within) {
-  width: 200px;
+  width: 210px;
 }
 
 .search-input {
@@ -96,29 +110,37 @@
   border: none;
   color: var(--text-primary);
   outline: none;
-  margin-left: 8px;
+  margin-left: 10px;
   width: 100%;
+  font-size: 0.9rem;
 }
 
 .search-input::placeholder {
   color: var(--text-muted);
 }
 
+/* Glassy Profile Pill */
 .profile-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  padding: 6px 12px;
+  background: rgba(18, 18, 28, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px 14px 5px 6px;
   border-radius: var(--radius-full);
   color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
   transition: all var(--transition-fast);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
 }
 
 .profile-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--accent-primary);
+  background: rgba(26, 26, 40, 0.85);
+  border-color: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
 }
 
 .avatar {
@@ -126,6 +148,7 @@
   height: 28px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1px solid rgba(0, 240, 255, 0.5);
 }
 
 .auth-actions {
@@ -134,32 +157,42 @@
   gap: 12px;
 }
 
+/* Glassy Login Button */
 .login-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: var(--accent-primary);
-  color: white;
-  padding: 8px 16px;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(139, 92, 246, 0.25) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: #ffffff;
+  padding: 8px 18px;
   border-radius: var(--radius-full);
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 0.9rem;
   transition: all var(--transition-fast);
   text-decoration: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 .login-btn:hover {
-  background: var(--accent-secondary);
+  background: linear-gradient(135deg, #00f0ff 0%, #8b5cf6 100%);
+  color: #040406;
+  border-color: #00f0ff;
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
 }
 
+/* Glassy Logout Button */
 .logout-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
   padding: 8px;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -167,8 +200,10 @@
 }
 
 .logout-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.25);
   border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.35);
   transform: translateY(-1px);
 }
 
@@ -177,7 +212,7 @@
     display: none;
   }
   .search-container:not(:focus-within) {
-    width: 40px;
+    width: 42px;
     padding: 8px;
     justify-content: center;
   }
