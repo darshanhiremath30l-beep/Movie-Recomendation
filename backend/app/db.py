@@ -5,6 +5,18 @@ from flask import current_app
 from bson import ObjectId
 from .local_db import local_db
 
+# Configure DNS resolver to include reliable public resolvers as fallbacks
+# Prevents SRV lookup timeouts on restrictive local networks/mobile hotspots
+try:
+    import dns.resolver
+    _default_resolver = dns.resolver.get_default_resolver()
+    if _default_resolver:
+        _fast_dns = ['8.8.8.8', '1.1.1.1', '8.8.4.4']
+        _default_resolver.nameservers = _fast_dns + [ns for ns in _default_resolver.nameservers if ns not in _fast_dns]
+        _default_resolver.lifetime = 10.0
+except Exception:
+    pass
+
 _mongo_client = None
 _mongo_db = None
 _mongo_available = None
@@ -52,13 +64,13 @@ def get_db():
         if not is_valid_mongo_uri(mongo_uri):
             if _mongo_available is None:
                 print("INFO: No external MongoDB URI configured in backend/.env.")
-                print("INFO: CineMatch is operating in local persistent storage mode (backend/data/local_db.json).")
+                print("INFO: PopcornAI is operating in local persistent storage mode (backend/data/local_db.json).")
             _mongo_available = False
             return local_db
 
         client_kwargs = {
-            "serverSelectionTimeoutMS": 3000,
-            "connectTimeoutMS": 3000
+            "serverSelectionTimeoutMS": 10000,
+            "connectTimeoutMS": 10000
         }
         if "mongodb+srv://" in mongo_uri or "ssl=true" in mongo_uri.lower() or "tls=true" in mongo_uri.lower():
             client_kwargs["tlsCAFile"] = certifi.where()
@@ -73,7 +85,11 @@ def get_db():
         return _mongo_db
     except Exception as conn_error:
         if _mongo_available is not False:
-            print(f"WARNING: MongoDB connection failed: {conn_error}")
+            err_str = str(conn_error)
+            print(f"WARNING: MongoDB connection failed: {err_str}")
+            if "TLSV1_ALERT_INTERNAL_ERROR" in err_str:
+                print("TIP: MongoDB Atlas rejected the connection because your current IP address is not whitelisted.")
+                print("TIP: Log in to MongoDB Atlas -> Network Access -> Add IP Address -> '0.0.0.0/0' (Allow Access From Anywhere).")
             print("INFO: Falling back to local persistent storage mode (backend/data/local_db.json).")
         _mongo_available = False
         return local_db

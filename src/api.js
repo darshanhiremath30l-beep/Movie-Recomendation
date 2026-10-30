@@ -1,3 +1,5 @@
+import { moviesData } from './data/mockData';
+
 const BASE_URL = 'http://127.0.0.1:5000/api';
 
 // Authentication API functions
@@ -71,47 +73,7 @@ export const signupUser = async (email, name = '') => {
 };
 
 // Fallback movie data for when backend is unavailable
-const fallbackMovies = [
-  {
-    id: "tt12735488",
-    title: "Kalki 2898 AD",
-    genres: ["Sci-Fi", "Action"],
-    rating: 7.6,
-    year: 2024,
-    duration: "3h 0m",
-    synopsis: "When the world is consumed by darkness, a modern avatar descends to earth to protect the innocent from evil forces in a futuristic post-apocalyptic world.",
-    poster: "https://m.media-amazon.com/images/M/MV5BZjJhMTFiN2UtMmQ4MC00MTZjLTk3NDYtYWRkNTFmNDQwNDFjXkEyXkFqcGc@._V1_SX300.jpg",
-    backdrop: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop",
-    cast: ["Prabhas", "Amitabh Bachchan", "Kamal Haasan", "Deepika Padukone"],
-    director: "Nag Ashwin"
-  },
-  {
-    id: "tt15239678",
-    title: "Dune: Part Two",
-    genres: ["Sci-Fi", "Adventure"],
-    rating: 8.5,
-    year: 2024,
-    duration: "2h 46m",
-    synopsis: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
-    poster: "https://m.media-amazon.com/images/M/MV5BN2QyZGU4ZDctOWMzMy00NTc5LThlOGQtODhmNDI1NmY5YzAwXkEyXkFqcGc@._V1_SX300.jpg",
-    backdrop: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop",
-    cast: ["Timothée Chalamet", "Zendaya", "Rebecca Ferguson"],
-    director: "Denis Villeneuve"
-  },
-  {
-    id: "tt28448834",
-    title: "Stree 2",
-    genres: ["Horror", "Comedy"],
-    rating: 7.5,
-    year: 2024,
-    duration: "2h 27m",
-    synopsis: "The town of Chanderi is haunted again by a headless entity named Sarkata. Vicky and his squad must save their town.",
-    poster: "https://m.media-amazon.com/images/M/MV5BMjA4Y2E4NDEtN2VhNC00NWMxLWEyNWItN2JjY2ZlNDI3NzQ1XkEyXkFqcGc@._V1_SX300.jpg",
-    backdrop: "https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1200&auto=format&fit=crop",
-    cast: ["Rajkummar Rao", "Shraddha Kapoor", "Pankaj Tripathi"],
-    director: "Amar Kaushik"
-  }
-];
+const fallbackMovies = moviesData;
 
 
 export const interactWithMovie = async (movieId, action, payload = {}, userId = "default_user") => {
@@ -166,6 +128,23 @@ export const getRecommendations = async (userId = "default_user") => {
   }
 };
 
+export const matchMovieQuery = (movie, query) => {
+  if (!query || !query.trim()) return true;
+  const qClean = query.toLowerCase().trim();
+  const terms = qClean.replace(/\b(movies?|films?|cinema)\b/g, '').trim().split(/\s+/).filter(Boolean);
+  const targetTerms = terms.length > 0 ? terms : [qClean];
+
+  const searchableText = [
+    movie.title,
+    movie.director,
+    ...(movie.genres || []),
+    ...(movie.cast || []),
+    movie.synopsis
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  return targetTerms.every(term => searchableText.includes(term)) || searchableText.includes(qClean);
+};
+
 export const searchMovies = async (query) => {
   try {
     const res = await fetch(`${BASE_URL}/movies/search?q=${encodeURIComponent(query)}`);
@@ -173,10 +152,7 @@ export const searchMovies = async (query) => {
   } catch (err) {
     console.error("Search API error:", err);
     // Return filtered fallback movies based on query
-    const filtered = fallbackMovies.filter(movie =>
-      movie.title.toLowerCase().includes(query.toLowerCase()) ||
-      movie.genres.some(genre => genre.toLowerCase().includes(query.toLowerCase()))
-    );
+    const filtered = fallbackMovies.filter(movie => matchMovieQuery(movie, query));
     return { data: filtered };
   }
 };
@@ -205,5 +181,33 @@ export const getMovieDetailsAPI = async (id) => {
       return { data: fallbackMovie };
     }
     return null;
+  }
+};
+
+export const fetchLiveMovies = async (limit = 12) => {
+  try {
+    const res = await fetch(`${BASE_URL}/movies/live?limit=${limit}`);
+    if (res.ok) {
+      const json = await res.json();
+      return json.data || [];
+    }
+    return [];
+  } catch (err) {
+    console.error("Live movies API error:", err);
+    return [];
+  }
+};
+
+export const fetchMovieStreamingSources = async (movieId, region = 'IN') => {
+  try {
+    const res = await fetch(`${BASE_URL}/movies/${movieId}/sources?region=${region}`);
+    if (res.ok) {
+      const json = await res.json();
+      return json.data || [];
+    }
+    return [];
+  } catch (err) {
+    console.error("Streaming sources API error:", err);
+    return [];
   }
 };

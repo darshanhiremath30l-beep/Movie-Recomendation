@@ -2,9 +2,20 @@ import os
 import sys
 import time
 
+# Configure DNS resolver to include reliable public resolvers as fallbacks
+try:
+    import dns.resolver
+    _default_resolver = dns.resolver.get_default_resolver()
+    if _default_resolver:
+        _fast_dns = ['8.8.8.8', '1.1.1.1', '8.8.4.4']
+        _default_resolver.nameservers = _fast_dns + [ns for ns in _default_resolver.nameservers if ns not in _fast_dns]
+        _default_resolver.lifetime = 10.0
+except Exception:
+    pass
+
 def test_connection():
     print("=" * 60)
-    print("  CineMatch MongoDB Connection Tester")
+    print("  PopcornAI MongoDB Connection Tester")
     print("=" * 60)
     
     # 1. Load .env
@@ -56,8 +67,8 @@ def test_connection():
         from pymongo.errors import OperationFailure, ServerSelectionTimeoutError, ConfigurationError
         
         client_kwargs = {
-            "serverSelectionTimeoutMS": 5000,
-            "connectTimeoutMS": 5000
+            "serverSelectionTimeoutMS": 10000,
+            "connectTimeoutMS": 10000
         }
         if "mongodb+srv://" in mongo_uri or "ssl=true" in mongo_uri.lower():
             client_kwargs["tlsCAFile"] = certifi.where()
@@ -65,7 +76,7 @@ def test_connection():
         client = MongoClient(mongo_uri, **client_kwargs)
         
         start_time = time.time()
-        print("  Contacting MongoDB server (timeout: 5s)...")
+        print("  Contacting MongoDB server (timeout: 10s)...")
         ping_res = client.admin.command('ping')
         latency_ms = int((time.time() - start_time) * 1000)
         
@@ -98,16 +109,35 @@ def test_connection():
         return False
         
     except ServerSelectionTimeoutError as e:
+        err_str = str(e)
         print("\n" + "=" * 60)
-        print("[ERROR] SERVER SELECTION TIMEOUT (Cannot reach cluster)")
+        if "TLSV1_ALERT_INTERNAL_ERROR" in err_str:
+            print("[ERROR] ATLAS REJECTED CONNECTION (IP Not Whitelisted)")
+        else:
+            print("[ERROR] SERVER SELECTION TIMEOUT (Cannot reach cluster)")
         print("=" * 60)
-        print(f"Details: {e}")
-        print("\nHOW TO FIX (Most likely IP Whitelist):")
-        print("1. Go to MongoDB Atlas (https://cloud.mongodb.com)")
-        print("2. Navigate to 'Network Access' under Security in the left sidebar")
-        print("3. Click '+ ADD IP ADDRESS'")
-        print("4. Select 'ALLOW ACCESS FROM ANYWHERE' (0.0.0.0/0)")
-        print("5. Click 'Confirm' and wait 1 minute for it to apply, then test again")
+        print(f"Details: {err_str}")
+        
+        # Try to detect user's current public IP
+        current_ip = "Unknown"
+        try:
+            import urllib.request
+            current_ip = urllib.request.urlopen("https://api.ipify.org", timeout=3).read().decode("utf8").strip()
+        except Exception:
+            pass
+
+        print("\nHOW TO FIX (MongoDB Atlas IP Access List):")
+        print("MongoDB Atlas blocks all connections from IPs that are not in your Access List.")
+        if current_ip != "Unknown":
+            print(f"Your current public IP address is: {current_ip}")
+        print("\nFollow these steps to allow access:")
+        print("1. Log in to MongoDB Atlas: https://cloud.mongodb.com")
+        print("2. In the left navigation menu under 'Security', click 'Network Access'")
+        print("3. Click the '+ ADD IP ADDRESS' button on the top right")
+        print("4. Click 'ALLOW ACCESS FROM ANYWHERE' (or enter '0.0.0.0/0')")
+        print("   (Or click 'ADD CURRENT IP ADDRESS' to allow only your current network)")
+        print("5. Click 'Confirm'")
+        print("6. Wait about 30-60 seconds for Atlas status to turn 'Active', then run this test again!")
         return False
         
     except ConfigurationError as e:

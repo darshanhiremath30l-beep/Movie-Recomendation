@@ -22,7 +22,7 @@ FALLBACK_MOVIES = [
         "year": 2024,
         "duration": "3h 0m",
         "synopsis": "When the world is consumed by darkness, a modern avatar descends to earth to protect the innocent from evil forces in a futuristic post-apocalyptic world.",
-        "poster": "https://m.media-amazon.com/images/M/MV5BZjJhMTFiN2UtMmQ4MC00MTZjLTk3NDYtYWRkNTFmNDQwNDFjXkEyXkFqcGc@._V1_SX300.jpg",
+        "poster": "https://image.tmdb.org/t/p/w500/rstcAnBeCkxNQjNp3YXrF6IP1tW.jpg",
         "match_score": "95% Match",
         "ai_reason": "Trending Epic Sci-Fi"
     },
@@ -34,9 +34,21 @@ FALLBACK_MOVIES = [
         "year": 2024,
         "duration": "2h 46m",
         "synopsis": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
-        "poster": "https://m.media-amazon.com/images/M/MV5BN2QyZGU4ZDctOWMzMy00NTc5LThlOGQtODhmNDI1NmY5YzAwXkEyXkFqcGc@._V1_SX300.jpg",
+        "poster": "https://image.tmdb.org/t/p/w500/6izwz7rsy95ARzTR3poZ8H6c5pp.jpg",
         "match_score": "94% Match",
         "ai_reason": "Critically Acclaimed Sci-Fi"
+    },
+    {
+        "id": "tt28448834",
+        "title": "Stree 2",
+        "genres": ["Hindi", "Horror", "Comedy"],
+        "rating": 7.5,
+        "year": 2024,
+        "duration": "2h 27m",
+        "synopsis": "The town of Chanderi is haunted again by a headless entity named Sarkata. Vicky and his squad must save their town.",
+        "poster": "https://image.tmdb.org/t/p/w500/m2zXTuNPkywdYLyWlVyJZW2QOJH.jpg",
+        "match_score": "93% Match",
+        "ai_reason": "Blockbuster Horror Comedy"
     },
     {
         "id": "tt6263850",
@@ -46,7 +58,7 @@ FALLBACK_MOVIES = [
         "year": 2024,
         "duration": "2h 8m",
         "synopsis": "Wolverine is recovering from his injuries when he crosses paths with the loudmouth Deadpool to defeat a common enemy.",
-        "poster": "https://m.media-amazon.com/images/M/MV5BNzRiMjg0MzUtNTNhYi00N2Q5LWEwMzMtYWJiM2M1M2VkOGU1XkEyXkFqcGc@._V1_SX300.jpg",
+        "poster": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",
         "match_score": "91% Match",
         "ai_reason": "High-Energy Action Comedy"
     }

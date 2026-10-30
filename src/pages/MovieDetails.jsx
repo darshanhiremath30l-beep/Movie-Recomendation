@@ -1,8 +1,9 @@
 import { useParams } from 'react-router-dom';
 import { useContext, useState, useEffect } from 'react';
 import { RecommendationContext } from '../RecommendationContext';
-import { getMovieDetailsAPI } from '../api';
-import { Star, Play, Plus, Heart, X, ExternalLink, Video } from 'lucide-react';
+import { getMovieDetailsAPI, fetchMovieStreamingSources } from '../api';
+import { getFallbackPoster } from '../utils/posterHelper';
+import { Star, Play, Plus, Heart, X, ExternalLink, Video, Tv } from 'lucide-react';
 import './MovieDetails.css';
 
 // Mapping for mock dataset IDs to valid IMDb IDs for external streaming
@@ -41,6 +42,7 @@ const MovieDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showPlayer, setShowPlayer] = useState(false);
   const [useTrailer, setUseTrailer] = useState(false);
+  const [sources, setSources] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -51,6 +53,15 @@ const MovieDetails = () => {
       }
       setLoading(false);
     });
+
+    if (id) {
+      const lookupId = id.startsWith('tt') ? id : (mockMovieImdbMap[id] || id);
+      fetchMovieStreamingSources(lookupId).then(srcs => {
+        if (srcs && srcs.length > 0) {
+          setSources(srcs);
+        }
+      });
+    }
   }, [id]);
 
   if (loading) {
@@ -84,13 +95,29 @@ const MovieDetails = () => {
     <>
       <div className="details-page animate-fade-in">
         <div className="details-hero">
-          <img src={movie.backdrop} alt={movie.title} className="details-backdrop" />
+          <img 
+            src={movie.backdrop || "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop"} 
+            alt={movie.title} 
+            className="details-backdrop"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop";
+            }}
+          />
           <div className="details-overlay"></div>
         </div>
 
         <div className="page-container" style={{ paddingTop: 0 }}>
           <div className="details-content-wrapper">
-            <img src={movie.poster} alt={movie.title} className="details-poster" />
+            <img 
+              src={movie.poster || getFallbackPoster(movie.title, movie.genres, movie.year)} 
+              alt={movie.title} 
+              className="details-poster" 
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                e.currentTarget.src = getFallbackPoster(movie.title, movie.genres, movie.year);
+              }}
+            />
             
             <div className="details-info">
               <h1 className="details-title">{movie.title}</h1>
@@ -151,6 +178,52 @@ const MovieDetails = () => {
                 <h3>Storyline</h3>
                 <p className="synopsis-text">{movie.synopsis}</p>
               </div>
+
+              {sources.length > 0 && (
+                <div className="details-section" style={{ marginTop: '20px' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }}></span>
+                    Where to Stream Live
+                  </h3>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' }}>
+                    {sources.map((src, idx) => (
+                      <a
+                        key={idx}
+                        href={src.web_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="glass-panel"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '8px 16px',
+                          borderRadius: '12px',
+                          textDecoration: 'none',
+                          color: '#fff',
+                          border: '1px solid rgba(0, 240, 255, 0.3)',
+                          background: 'rgba(255, 255, 255, 0.04)',
+                          transition: 'all 0.2s ease',
+                          fontSize: '0.88rem'
+                        }}
+                      >
+                        <span style={{ fontWeight: 600 }}>{src.name}</span>
+                        <span style={{
+                          fontSize: '0.72rem',
+                          padding: '2px 8px',
+                          borderRadius: '10px',
+                          background: src.type === 'Subscription' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(251, 191, 36, 0.2)',
+                          color: src.type === 'Subscription' ? '#34d399' : '#fbbf24',
+                          border: `1px solid ${src.type === 'Subscription' ? 'rgba(16, 185, 129, 0.4)' : 'rgba(251, 191, 36, 0.4)'}`
+                        }}>
+                          {src.type} [{src.region}]
+                        </span>
+                        <ExternalLink size={14} color="var(--text-muted)" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
               
               <div className="details-section">
                 <h3>Cast</h3>

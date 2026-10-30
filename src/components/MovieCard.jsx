@@ -1,14 +1,29 @@
-import { useState, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Plus, Heart, Check } from 'lucide-react';
 import { RecommendationContext } from '../RecommendationContext';
+import { getFallbackPoster } from '../utils/posterHelper';
 import './MovieCard.css';
 
 const MovieCard = ({ movie }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [inWatchlist, setInWatchlist] = useState(false);
   const [isAnimatingLike, setIsAnimatingLike] = useState(false);
+  const [posterSrc, setPosterSrc] = useState(
+    movie?.poster || getFallbackPoster(movie?.title, movie?.genres, movie?.year)
+  );
   const { interactWithMovie } = useContext(RecommendationContext);
+
+  useEffect(() => {
+    setPosterSrc(movie?.poster || getFallbackPoster(movie?.title, movie?.genres, movie?.year));
+  }, [movie?.poster, movie?.title, movie?.genres, movie?.year]);
+
+  const handleImgError = () => {
+    const fallback = getFallbackPoster(movie?.title, movie?.genres, movie?.year);
+    if (posterSrc !== fallback) {
+      setPosterSrc(fallback);
+    }
+  };
 
   const handleLike = (e) => {
     e.preventDefault();
@@ -55,7 +70,14 @@ const MovieCard = ({ movie }) => {
               ✨ {movie.match_score}
             </div>
           )}
-          <img src={movie.poster} alt={movie.title} className="movie-poster" loading="lazy" />
+          <img 
+            src={posterSrc} 
+            alt={movie.title} 
+            className="movie-poster" 
+            loading="lazy" 
+            referrerPolicy="no-referrer"
+            onError={handleImgError}
+          />
           
           <div className="movie-overlay">
             {movie.ai_reason && (

@@ -8,12 +8,12 @@ const Footer = () => {
       <div className="footer-orb"></div>
       <div className="footer-content animate-fade-in">
         <div className="footer-brand">
-          <Link to="/" className="footer-logo text-gradient">
-            <Film className="icon" size={28} />
-            CineMatch AI
+          <Link to="/" className="footer-logo text-gradient" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '1.6rem' }}>🍿</span>
+            PopcornAI
           </Link>
           <p className="footer-desc">
-            Your personal cinematic universe. Discover, track, and share the movies you love with our AI-powered recommendation engine.
+            Your personal cinematic universe. Discover, track, and stream the movies you love with our AI-powered recommendation engine.
           </p>
         </div>
 
@@ -49,7 +49,7 @@ const Footer = () => {
       </div>
 
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} CineMatch AI. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} PopcornAI. All rights reserved.</p>
         <div className="social-links">
           <a href="#" className="social-icon" aria-label="Twitter"><MessageCircle size={20} /></a>
           <a href="#" className="social-icon" aria-label="Instagram"><Camera size={20} /></a>

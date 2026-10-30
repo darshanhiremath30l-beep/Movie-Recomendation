@@ -33,9 +33,9 @@ const Navbar = () => {
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <Link to="/" className="nav-brand text-gradient">
-        <Film className="icon" size={28} />
-        CineMatch AI
+      <Link to="/" className="nav-brand text-gradient" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span style={{ fontSize: '1.7rem', filter: 'drop-shadow(0 0 10px rgba(251, 191, 36, 0.5))' }}>🍿</span>
+        <span>PopcornAI</span>
       </Link>
 
       <div className="nav-links">

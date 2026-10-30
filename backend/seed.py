@@ -12,7 +12,28 @@ load_dotenv(env_path)
 MONGO_URI = os.getenv('MONGO_URI', '').strip()
 MONGO_DBNAME = os.getenv('MONGO_DBNAME', 'cinematch_db').strip()
 
-mock_movies = [
+import json
+all_movies_path = os.path.join(os.path.dirname(__file__), 'data', 'all_movies.json')
+if os.path.exists(all_movies_path):
+    with open(all_movies_path, 'r', encoding='utf-8') as f:
+        raw_movies = json.load(f)
+    mock_movies = []
+    for m in raw_movies:
+        mock_movies.append({
+            "movie_id": m['id'],
+            "title": m['title'],
+            "genres": m['genres'],
+            "rating": m['rating'],
+            "year": int(m['year']) if str(m['year']).isdigit() else 2024,
+            "duration": m['duration'],
+            "synopsis": m['synopsis'],
+            "poster": m['poster'],
+            "backdrop": m['backdrop'],
+            "cast": m['cast'],
+            "director": m['director']
+        })
+else:
+    mock_movies = [
   {
     "movie_id": "tt12735488",
     "title": "Kalki 2898 AD",
@@ -21,8 +42,8 @@ mock_movies = [
     "year": 2024,
     "duration": "3h 0m",
     "synopsis": "When the world is consumed by darkness, a modern avatar descends to earth to protect the innocent from evil forces in a futuristic post-apocalyptic world.",
-    "poster": "https://m.media-amazon.com/images/M/MV5BZjJhMTFiN2UtMmQ4MC00MTZjLTk3NDYtYWRkNTFmNDQwNDFjXkEyXkFqcGc@._V1_SX300.jpg",
-    "backdrop": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop",
+    "poster": "https://image.tmdb.org/t/p/w500/rstcAnBeCkxNQjNp3YXrF6IP1tW.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/o8XSR1SONnjcsv84NRu6Mwsl5io.jpg",
     "cast": ["Prabhas", "Amitabh Bachchan", "Kamal Haasan", "Deepika Padukone"],
     "director": "Nag Ashwin"
   },
@@ -34,8 +55,8 @@ mock_movies = [
     "year": 2024,
     "duration": "2h 46m",
     "synopsis": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
-    "poster": "https://m.media-amazon.com/images/M/MV5BN2QyZGU4ZDctOWMzMy00NTc5LThlOGQtODhmNDI1NmY5YzAwXkEyXkFqcGc@._V1_SX300.jpg",
-    "backdrop": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop",
+    "poster": "https://image.tmdb.org/t/p/w500/6izwz7rsy95ARzTR3poZ8H6c5pp.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/eZ239CUp1d6OryZEBPnO2n87gMG.jpg",
     "cast": ["Timothée Chalamet", "Zendaya", "Rebecca Ferguson"],
     "director": "Denis Villeneuve"
   },
@@ -47,8 +68,8 @@ mock_movies = [
     "year": 2024,
     "duration": "2h 27m",
     "synopsis": "The town of Chanderi is haunted again by a headless entity named Sarkata. Vicky and his squad must save their town.",
-    "poster": "https://m.media-amazon.com/images/M/MV5BMjA4Y2E4NDEtN2VhNC00NWMxLWEyNWItN2JjY2ZlNDI3NzQ1XkEyXkFqcGc@._V1_SX300.jpg",
-    "backdrop": "https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1200&auto=format&fit=crop",
+    "poster": "https://image.tmdb.org/t/p/w500/m2zXTuNPkywdYLyWlVyJZW2QOJH.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/u060S4drIWntmLeMDGe7mD0V6Jh.jpg",
     "cast": ["Rajkummar Rao", "Shraddha Kapoor", "Pankaj Tripathi"],
     "director": "Amar Kaushik"
   },
@@ -60,8 +81,8 @@ mock_movies = [
     "year": 2024,
     "duration": "2h 8m",
     "synopsis": "Wolverine is recovering from his injuries when he crosses paths with the loudmouth Deadpool to defeat a common enemy.",
-    "poster": "https://m.media-amazon.com/images/M/MV5BNzRiMjg0MzUtNTNhYi00N2Q5LWEwMzMtYWJiM2M1M2VkOGU1XkEyXkFqcGc@._V1_SX300.jpg",
-    "backdrop": "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=1200&auto=format&fit=crop",
+    "poster": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/by8z9Fe8y7p4jo2YlW2SZDnptyT.jpg",
     "cast": ["Ryan Reynolds", "Hugh Jackman", "Emma Corrin"],
     "director": "Shawn Levy"
   },
@@ -73,49 +94,101 @@ mock_movies = [
     "year": 2023,
     "duration": "3h 0m",
     "synopsis": "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb during World War II.",
-    "poster": "https://m.media-amazon.com/images/M/MV5BMDBmYTZjNjUtN2M1MS00MTQ2LTkNEtLTlhNzNhNmNhNTU0XkEyXkFqcGc@._V1_SX300.jpg",
-    "backdrop": "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1200&auto=format&fit=crop",
+    "poster": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/neeNHeXjMF5fXoCJRsOmkNGC7q.jpg",
     "cast": ["Cillian Murphy", "Emily Blunt", "Matt Damon", "Robert Downey Jr."],
     "director": "Christopher Nolan"
   },
   {
     "movie_id": "tt15354916",
     "title": "Jawan",
-    "genres": ["Hindi", "Action"],
+    "genres": ["Hindi", "Action", "Thriller"],
     "rating": 7.0,
     "year": 2023,
     "duration": "2h 49m",
     "synopsis": "A prison warden recruits inmates to commit outrageous crimes that shed light on corruption and injustice.",
-    "poster": "https://m.media-amazon.com/images/M/MV5BMGExNGI1NDktOWI2Mi00NDM3LWIxMmQtNTQxYTgzMzI0MTA1XkEyXkFqcGc@._V1_SX300.jpg",
-    "backdrop": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop",
+    "poster": "https://image.tmdb.org/t/p/w500/jFt1gS4BGHlK8xt76Y81Alp4dbt.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/5LtSjMNw6j3LkG29Oa4O0iY5U8.jpg",
     "cast": ["Shah Rukh Khan", "Nayanthara", "Vijay Sethupathi"],
     "director": "Atlee"
   },
   {
     "movie_id": "tt8178634",
     "title": "RRR",
-    "genres": ["Telugu", "Action"],
+    "genres": ["Telugu", "Action", "Drama"],
     "rating": 7.8,
     "year": 2022,
     "duration": "3h 7m",
     "synopsis": "A fearless warrior on a perilous mission comes face to face with a steely cop serving British forces in pre-independent India.",
-    "poster": "https://m.media-amazon.com/images/M/MV5BNWMwODYyMjQtMTczMi00NTQ1LWFkYjItMGJhMWRkY2E3NDAyXkEyXkFqcGc@._V1_SX300.jpg",
-    "backdrop": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop",
+    "poster": "https://image.tmdb.org/t/p/w500/wE0I6efAW4cDDmZQWtwZMOW44EJ.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/i0Y0wP8H6SRgjr6QmuwbtQbS24D.jpg",
     "cast": ["N.T. Rama Rao Jr.", "Ram Charan", "Ajay Devgn"],
     "director": "S.S. Rajamouli"
   },
   {
     "movie_id": "tt10698680",
     "title": "K.G.F: Chapter 2",
-    "genres": ["Kannada", "Action"],
+    "genres": ["Kannada", "Action", "Crime"],
     "rating": 8.2,
     "year": 2022,
     "duration": "2h 46m",
     "synopsis": "In the blood-soaked Kolar Gold Fields, Rocky's name strikes fear into his foes while he battles threats from all sides.",
-    "poster": "https://m.media-amazon.com/images/M/MV5BZmQzZjVkZTUtYjI4ZC00ZDJmLWI0ZDUtZTFmMGM1Mzc5ZjIyXkEyXkFqcGc@._V1_SX300.jpg",
-    "backdrop": "https://images.unsplash.com/photo-1505686994434-e3cc5abf1330?q=80&w=1200&auto=format&fit=crop",
+    "poster": "https://image.tmdb.org/t/p/w500/khNVygolU0TxLIDWff5tQlAhZ23.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/nsV5Mfi9FAV4w8eDsdr7uqVswOk.jpg",
     "cast": ["Yash", "Sanjay Dutt", "Raveena Tandon"],
     "director": "Prashanth Neel"
+  },
+  {
+    "movie_id": "tt23849204",
+    "title": "12th Fail",
+    "genres": ["Hindi", "Drama", "Biography"],
+    "rating": 8.9,
+    "year": 2023,
+    "duration": "2h 27m",
+    "synopsis": "Based on the real-life story of IPS Officer Manoj Kumar Sharma, who fearlessly restarts his academic journey.",
+    "poster": "https://image.tmdb.org/t/p/w500/wTnV3PCVW5O92JMrFvvrRcV39RU.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/1pmXyN3sKeYoUhu5VBZiDU4BX21.jpg",
+    "cast": ["Vikrant Massey", "Medha Shankr", "Anant Joshi"],
+    "director": "Vidhu Vinod Chopra"
+  },
+  {
+    "movie_id": "tt15327088",
+    "title": "Kantara",
+    "genres": ["Kannada", "Action", "Drama"],
+    "rating": 8.2,
+    "year": 2022,
+    "duration": "2h 28m",
+    "synopsis": "When greed paves the way for betrayal and murder, a young tribal man embodies the spirit of his ancestors to seek divine justice.",
+    "poster": "https://image.tmdb.org/t/p/w500/jIsKmkxMzdCZ0Ux1GVSnu8m6Na6.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/kXElm7wt2kAXEVwJqW4cFhP43nW.jpg",
+    "cast": ["Rishab Shetty", "Sapthami Gowda", "Kishore"],
+    "director": "Rishab Shetty"
+  },
+  {
+    "movie_id": "tt9389998",
+    "title": "Pushpa: The Rise",
+    "genres": ["Telugu", "Action", "Crime"],
+    "rating": 7.6,
+    "year": 2021,
+    "duration": "2h 59m",
+    "synopsis": "A laborer rises through the ranks of a red sandalwood smuggling syndicate in the Seshachalam hills of Andhra Pradesh.",
+    "poster": "https://image.tmdb.org/t/p/w500/h6Pd89ngvl9quPVsx3KoJlQsvk9.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/jQIcn51nsvMrpB9NFwEOb9QHhFt.jpg",
+    "cast": ["Allu Arjun", "Rashmika Mandanna", "Fahadh Faasil"],
+    "director": "Sukumar"
+  },
+  {
+    "movie_id": "tt1375666",
+    "title": "Inception",
+    "genres": ["Sci-Fi", "Action", "Adventure"],
+    "rating": 8.8,
+    "year": 2010,
+    "duration": "2h 28m",
+    "synopsis": "A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
+    "poster": "https://image.tmdb.org/t/p/w500/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/w1280/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg",
+    "cast": ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page"],
+    "director": "Christopher Nolan"
   }
 ]
 

@@ -1,8 +1,11 @@
+import os
 import requests
 from youtubesearchpython import VideosSearch
 
-OMDB_API_KEY = '46865f5b'
+OMDB_API_KEY = os.getenv('OMDB_API_KEY', '46865f5b').strip()
 OMDB_BASE_URL = 'http://www.omdbapi.com/'
+DEFAULT_POSTER = 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600&auto=format&fit=crop'
+DEFAULT_BACKDROP = 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop'
 
 def parse_movie(movie_data):
     # Converts OMDB format to our internal dict format
@@ -23,7 +26,8 @@ def parse_movie(movie_data):
         rating = 0.0
 
     poster = movie_data.get('Poster')
-    if poster == 'N/A': poster = 'https://via.placeholder.com/600x900?text=No+Poster'
+    if not poster or poster == 'N/A' or not poster.startswith('http'):
+        poster = DEFAULT_POSTER
     
     return {
         "id": movie_data.get('imdbID'),
@@ -34,21 +38,22 @@ def parse_movie(movie_data):
         "duration": movie_data.get('Runtime', '120m'),
         "synopsis": synopsis,
         "poster": poster,
-        "backdrop": poster, # OMDB doesn't do backdrops natively
+        "backdrop": DEFAULT_BACKDROP,
         "cast": movie_data.get('Actors', 'N/A').split(', '),
         "director": movie_data.get('Director', 'N/A'),
     }
 
 def search_movies(query):
     try:
-        res = requests.get(f"{OMDB_BASE_URL}?s={query}&apikey={OMDB_API_KEY}")
+        res = requests.get(f"{OMDB_BASE_URL}?s={query}&apikey={OMDB_API_KEY}", timeout=2.5)
         data = res.json()
         if data.get("Response") == "True":
             results = []
             for item in data.get("Search", []):
                 if item.get("Type") == "movie":
                     poster = item.get("Poster")
-                    if poster == "N/A": poster = 'https://via.placeholder.com/600x900?text=No+Poster'
+                    if not poster or poster == "N/A" or not poster.startswith("http"):
+                        poster = DEFAULT_POSTER
                     results.append({
                         "id": item.get('imdbID'),
                         "title": item.get('Title'),
@@ -67,7 +72,7 @@ def search_movies(query):
 
 def get_movie_details(imdb_id):
     try:
-        res = requests.get(f"{OMDB_BASE_URL}?i={imdb_id}&plot=full&apikey={OMDB_API_KEY}")
+        res = requests.get(f"{OMDB_BASE_URL}?i={imdb_id}&plot=full&apikey={OMDB_API_KEY}", timeout=2.5)
         data = res.json()
         if data.get("Response") == "True":
             return parse_movie(data)

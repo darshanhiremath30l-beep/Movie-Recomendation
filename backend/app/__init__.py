@@ -42,7 +42,7 @@ def create_app(config_name='default'):
             
         return {
             'status': 'healthy', 
-            'message': 'CineMatch AI API is running!',
+            'message': 'PopcornAI API is running!',
             'db_status': db_status,
             'database_type': db_type
         }

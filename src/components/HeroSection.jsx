@@ -23,7 +23,15 @@ const HeroSection = ({ movies }) => {
           key={movie.id} 
           className={`hero-slide ${index === currentIndex ? 'active' : ''}`}
         >
-          <img src={movie.backdrop} alt={movie.title} className="hero-backdrop" />
+          <img 
+            src={movie.backdrop || "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop"} 
+            alt={movie.title} 
+            className="hero-backdrop" 
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop";
+            }}
+          />
           <div className="hero-overlay"></div>
           
           <div className="hero-content">

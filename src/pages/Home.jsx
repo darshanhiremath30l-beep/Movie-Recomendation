@@ -1,10 +1,11 @@
-import { useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { RecommendationContext } from '../RecommendationContext';
 import { moviesData } from '../data/mockData';
+import { fetchLiveMovies } from '../api';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import HeroSection from '../components/HeroSection';
 import MovieCard from '../components/MovieCard';
-import { ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronRight, Sparkles, Radio } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Home.css';
 
@@ -28,6 +29,15 @@ const topGenres = [
 const Home = () => {
   const navigate = useNavigate();
   const { recommendations, isLoading } = useContext(RecommendationContext);
+  const [liveMovies, setLiveMovies] = useState([]);
+
+  useEffect(() => {
+    fetchLiveMovies(4).then(data => {
+      if (data && data.length > 0) {
+        setLiveMovies(data);
+      }
+    });
+  }, []);
 
   // For the cinematic hero, we take top 3 trending movies
   const cinematicMovies = moviesData.filter(m => m.trending).slice(0, 3);
@@ -55,6 +65,30 @@ const Home = () => {
             ))}
           </div>
         </AnimatedSection>
+
+        {liveMovies.length > 0 && (
+          <AnimatedSection className="mb-12" style={{ marginTop: '80px' }}>
+            <div className="section-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 10px #ef4444' }}></span>
+                  Live Streaming Now
+                </h2>
+                <span className="smart-badge" style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '15px', background: 'rgba(239, 68, 68, 0.15)', color: '#ff6b6b', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                  ⚡ Live Releases
+                </span>
+              </div>
+              <Link to="/explore?genre=Live" className="view-all">
+                Explore All <ChevronRight size={18} />
+              </Link>
+            </div>
+            <div className="movies-grid">
+              {liveMovies.map(movie => (
+                <MovieCard key={`live-${movie.id}`} movie={movie} />
+              ))}
+            </div>
+          </AnimatedSection>
+        )}
 
         {recommendations && recommendations.length > 0 && (
           <AnimatedSection className="mb-12" style={{ marginTop: '80px' }}>
